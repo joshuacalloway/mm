@@ -19,9 +19,45 @@ namespace WpfApplication1
     /// </summary>
     public partial class MainWindow : Window
     {
+        Window1 editWindow = new Window1();
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            Rule rule = new Rule();
+            rule.name = comboBox2.Text;
+            editWindow.rule = rule;
+            editWindow.update();
+            editWindow.Show();
+        //    editWindow.Activate();
+        
+        }
+
+        private void comboBox2_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            Console.WriteLine("comboBox2_TargetUpdated");
+            button2.IsEnabled = true;
+        }
+
+        private void comboBox2_TextInput(object sender, TextCompositionEventArgs e)
+        {
+            Console.WriteLine("comboBox2_TextInput");
+            button2.IsEnabled = true;
+
+        }
+
+        private void comboBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("comboBox2_KeyDown");
+            button2.IsEnabled = true;
         }
     }
 }
