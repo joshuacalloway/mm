@@ -18,21 +18,19 @@ namespace WpfApplication1
     /// </summary>
     public partial class Window1 : Window
     {
-        public Rule rule { get; set; }
-        public void update()
-        {
-            ruleNameComboBox.Text = rule.name;
-        }
         public Window1()
         {
             InitializeComponent();
-
+	    string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+	    SavedRules.Source = new Uri(appPath + @"\Rules.xml");
 
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            rule.market = Decimal.Parse(marketComboBox.Text);
+	    string source = SavedRules.Source.LocalPath;
+	    SavedRules.Document.Save(source);
+	    Console.WriteLine("Save Button Clicked " + source);
             this.Hide();
         }
     }

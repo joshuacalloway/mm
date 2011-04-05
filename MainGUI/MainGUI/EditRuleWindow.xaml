@@ -4,6 +4,10 @@
         
         Title="Edit/ Create New Rule" Height="500" Width="750">
   <Grid Height="500" Background="#0F000000" Margin="10,10,12,130">
+    <Grid.DataContext>
+      <XmlDataProvider x:Name="SavedRules" Source="Rules.xml" XPath="Rules/Rule"/>
+    </Grid.DataContext>
+
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="200*" />
       <ColumnDefinition Width="100*" />
@@ -24,7 +28,13 @@
     </Grid.RowDefinitions>
     <DockPanel Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="0" Height="34" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300">
       <Label Content="Rule Name" Height="30" Width="75" HorizontalAlignment="Left" />
-      <ComboBox Height="30" IsEditable="True" Name="ruleNameComboBox" Width="200" />
+      <ComboBox Height="26" IsEditable="True" Name="ruleNameComboBox" Width="200" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding}">
+	<ComboBox.ItemTemplate>
+	  <DataTemplate>
+	    <TextBlock Text="{Binding XPath=Name}"/>
+	  </DataTemplate>
+	</ComboBox.ItemTemplate>
+      </ComboBox>
     </DockPanel>
     <DockPanel Grid.Column="0" Grid.Row="1" Height="34" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200">
       <Label Content="Market" Height="30" Width="150" HorizontalAlignment="Left" />

@@ -3,6 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Option Market Maker ( version 0.03 - April. 4, 2011 )" Height="402" Width="700">
   <Grid Height="400" Width="650">
+    <Grid.DataContext>
+      <XmlDataProvider x:Name="SavedRules" Source="Rules.xml" XPath="Rules/Rule"/>
+    </Grid.DataContext>
+
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="350*" />
       <ColumnDefinition Width="300*" />
@@ -19,7 +23,13 @@
 	  <Thickness Left="3" Right="3" Top="2" Bottom="2"/>
 	</DockPanel.Margin>
 	<Label Content="Rule Name" Height="26" Width="75" />
-	<ComboBox Height="26" IsEditable="True" KeyDown="ruleNameCombBox_KeyDown" Name="ruleNameComboBox" Width="200" />
+	<ComboBox Height="26" IsEditable="True" KeyDown="ruleNameCombBox_KeyDown" Name="ruleNameComboBox" Width="200" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding}">
+	  <ComboBox.ItemTemplate>
+	    <DataTemplate>
+	      <TextBlock Text="{Binding XPath=Name}"/>
+	    </DataTemplate>
+	  </ComboBox.ItemTemplate>
+	</ComboBox>
 	<Button Content="Edit"  IsEnabled="False" Height="25" Name="editRuleButton" Width="50" Click="editRuleButton_Click" />
       </DockPanel>
       <DockPanel Height="34" Width="250">
@@ -28,5 +38,6 @@
 	<Button Content="Watch" Name="watchButton" Width="50" Height="25" />
       </DockPanel>
     </DockPanel>
+           
   </Grid>
 </Window>

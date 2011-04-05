@@ -27,10 +27,10 @@ namespace WpfApplication1
 
         private void editRuleButton_Click(object sender, RoutedEventArgs e)
         {
-            Rule rule = new Rule();
-            rule.name = ruleNameComboBox.Text;
-            editWindow.rule = rule;
-            editWindow.update();
+//            Rule rule = new Rule();
+//            rule.name = ruleNameComboBox.Text;
+//            editWindow.rule = rule;
+//            editWindow.update();
             editWindow.Show();
         //    editWindow.Activate();
         

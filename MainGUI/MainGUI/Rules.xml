@@ -1,0 +1,10 @@
+<Rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Rule>
+    <Name>Bid aggressive in 0.05</Name>
+    <Market>0.05</Market>
+  </Rule>
+  <Rule>
+    <Name>Bid aggressive in 0.10</Name>
+    <Market>0.10</Market>
+  </Rule>
+</Rules>
