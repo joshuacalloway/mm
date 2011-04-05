@@ -1,0 +1,15 @@
+C:\Users\jpc\mm\MainGUI\MainGUI\bin\Debug\MainGUI.exe
+C:\Users\jpc\mm\MainGUI\MainGUI\bin\Debug\MainGUI.pdb
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainWindow.baml
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainWindow.g.cs
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\App.g.cs
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainGUI_MarkupCompile.cache
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainGUI.g.resources
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\WpfApplication1.Properties.Resources.resources
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainGUI.exe
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\MainGUI.pdb
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\EditRuleWindow.baml
+C:\Users\jpc\mm\MainGUI\MainGUI\obj\x86\Debug\EditRuleWindow.g.cs
