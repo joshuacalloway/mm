@@ -25,15 +25,10 @@ namespace WpfApplication1
             InitializeComponent();
         }
 
-        private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, RoutedEventArgs e)
+        private void editRuleButton_Click(object sender, RoutedEventArgs e)
         {
             Rule rule = new Rule();
-            rule.name = comboBox2.Text;
+            rule.name = ruleNameComboBox.Text;
             editWindow.rule = rule;
             editWindow.update();
             editWindow.Show();
@@ -41,23 +36,10 @@ namespace WpfApplication1
         
         }
 
-        private void comboBox2_TargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            Console.WriteLine("comboBox2_TargetUpdated");
-            button2.IsEnabled = true;
-        }
-
-        private void comboBox2_TextInput(object sender, TextCompositionEventArgs e)
-        {
-            Console.WriteLine("comboBox2_TextInput");
-            button2.IsEnabled = true;
-
-        }
-
-        private void comboBox2_KeyDown(object sender, KeyEventArgs e)
+        private void ruleNameCombBox_KeyDown(object sender, KeyEventArgs e)
         {
             Console.WriteLine("comboBox2_KeyDown");
-            button2.IsEnabled = true;
+            editRuleButton.IsEnabled = true;
         }
     }
 }

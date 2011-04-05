@@ -21,7 +21,7 @@ namespace WpfApplication1
         public Rule rule { get; set; }
         public void update()
         {
-            comboBox2.Text = rule.name;
+            ruleNameComboBox.Text = rule.name;
         }
         public Window1()
         {
@@ -30,7 +30,7 @@ namespace WpfApplication1
 
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             rule.market = Decimal.Parse(marketComboBox.Text);
             this.Hide();

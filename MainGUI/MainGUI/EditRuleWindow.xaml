@@ -3,142 +3,133 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         
         Title="Edit/ Create New Rule" Height="500" Width="750">
-        <Grid Height="500" Background="#0F000000" Margin="10,10,12,130">
-            <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200*" />
-            <ColumnDefinition Width="100*" />
-                <ColumnDefinition Width="300*" />
-                <ColumnDefinition Width="150*" />
-            </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="34"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <DockPanel Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="0" Height="34" HorizontalAlignment="Left" Name="dockPanel1" VerticalAlignment="Top" Width="300">
-            <Label Content="Rule Name" Height="30" Name="label1" Width="75" HorizontalAlignment="Left" />
-            <ComboBox Height="30" IsEditable="True" Name="comboBox2" Width="200" />
-        </DockPanel>
-        <DockPanel Grid.Column="0" Grid.Row="1" Height="34" HorizontalAlignment="Left" Name="dockPanel3" VerticalAlignment="Top" Width="200">
-            <Label Content="Market" Height="30" Name="label5" Width="150" HorizontalAlignment="Left" />
-                <ComboBox Height="30" IsEditable="True" Name="marketComboBox" SelectedIndex="0" Width="50">
-                    <ComboBoxItem Content=".05" />
-                    <ComboBoxItem Content=".10" />
-                </ComboBox>
-        </DockPanel>
-        <DockPanel Grid.Column="0" Height="30" Grid.Row="2" Name="dockPanel7" Width="200">
-            <Label Content="Min Total Bid Size" HorizontalAlignment="Left" Height="30" Name="label7" Width="150" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox4" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-        <DockPanel Grid.Column="2" Grid.Row="0" Name="dockPanel2">
-            <Label Content="Route" Height="30" Name="label4" Width="75" HorizontalAlignment="Left" />
-                <ComboBox Height="30" IsEditable="True" Name="comboBox3" SelectedIndex="0" Width="125">
-                    <ComboBoxItem Content="TNFG-OPT" />
-                    <ComboBoxItem Content="TNFG" />
-                </ComboBox>
-            </DockPanel>
+  <Grid Height="500" Background="#0F000000" Margin="10,10,12,130">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="200*" />
+      <ColumnDefinition Width="100*" />
+      <ColumnDefinition Width="300*" />
+      <ColumnDefinition Width="150*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="34"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="0" Height="34" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300">
+      <Label Content="Rule Name" Height="30" Width="75" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="ruleNameComboBox" Width="200" />
+    </DockPanel>
+    <DockPanel Grid.Column="0" Grid.Row="1" Height="34" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200">
+      <Label Content="Market" Height="30" Width="150" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="marketComboBox" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content=".05" />
+	<ComboBoxItem Content=".10" />
+      </ComboBox>
+    </DockPanel>
+    <DockPanel Grid.Column="0" Height="30" Grid.Row="2" Width="200">
+      <Label Content="Min Total Bid Size" HorizontalAlignment="Left" Height="30" Width="150" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox4" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Column="2" Grid.Row="0">
+      <Label Content="Route" Height="30" Width="75" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox3" SelectedIndex="0" Width="125">
+	<ComboBoxItem Content="TNFG-OPT" />
+	<ComboBoxItem Content="TNFG" />
+      </ComboBox>
+    </DockPanel>
 
-        <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="1" Name="dockPanel8" Width="350">
-            <Label Content="Min Core Exchange Bid Size" HorizontalAlignment="Right"  Height="30" Name="label8" Width="300" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox3" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-        <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="3" Name="dockPanel9" Width="350">
-            <Label Content="Extra Degrade before Cancel(%)" Height="30" Name="label9" Width="300" HorizontalAlignment="Right" />
-            <ComboBox Height="30" IsEditable="True" Name="comboBox9" SelectedIndex="0" Width="50">
-                <ComboBoxItem Content=".05" />
-            </ComboBox>
-        </DockPanel>
-            
-        <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Height="30" Grid.Row="4" Name="dockPanel6" Width="350">
-            <Label Content="Max Mid-Pt Ask b4 Cancel" Height="30" Name="label6" Width="300" HorizontalAlignment="Right" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox1" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-        <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="2" Name="dockPanel5" Width="350">
-            <Label Content="Max Ask % Bid Size BUY Trigger(%)" Height="30" Name="label3" Width="300" HorizontalAlignment="Right" />
-            <ComboBox Height="30" IsEditable="True" Name="comboBox5" SelectedIndex="0" Width="50">
-                <ComboBoxItem Content="14" />
-            </ComboBox>
-        </DockPanel>
-
-
-        <DockPanel Grid.Column="3" Height="30" Grid.Row="1" Name="dockPanel10">
-                <Label Content="" Height="30" Name="label11" Width="50" />
-            <Label Content="Exchange" Height="30" Name="label12" Width="50" HorizontalAlignment="Left" />
-            <Label Content="Volume" Height="30" Name="label13" Width="50" HorizontalAlignment="Left" />
-       </DockPanel>
-            <DockPanel Grid.Column="3" Height="30" Grid.Row="2" Name="dockPanel12">
-            <Label Content="Order 1:" Height="30" Name="label14" Width="50" HorizontalAlignment="Left" />
-                <ComboBox Height="30" IsEditable="True" Name="comboBox11" SelectedIndex="0" Width="50">
-                    <ComboBoxItem Content="CBO" />
-                </ComboBox>
-                <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox5" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-            <DockPanel Grid.Column="3" Height="30" Grid.Row="3" Name="dockPanel13">
-            <Label Content="Order 2:" Height="30" Name="label15" Width="50" HorizontalAlignment="Left" />
-                <ComboBox Height="30" IsEditable="True" Name="comboBox12" SelectedIndex="0" Width="50">
-                    <ComboBoxItem Content="PHS" />
-                </ComboBox>
-            <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox6" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-            <DockPanel Grid.Column="3" Height="30" Grid.Row="4" Name="dockPanel14">
-            <Label Content="Order 3:" Height="30" Name="label16" Width="50" HorizontalAlignment="Left" />
-                <ComboBox Height="30" IsEditable="True" Name="comboBox13" SelectedIndex="0" Width="50">
-                    <ComboBoxItem Content="ISE" />
-                </ComboBox>
-            <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox7" VerticalAlignment="Top" Width="50" />
-        </DockPanel>
-        <DockPanel Grid.Row="3" Grid.Column="0" Height="30" Name="dockPanel30" Width="200">
-            <Label Content="Min Size" Height="25" Name="label30" Width="100" HorizontalAlignment="Left" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="100" Name="textBox30" VerticalAlignment="Top" Width="100" />
-        </DockPanel>
-        <DockPanel  Grid.Row="4" Grid.Column="0" Height="30" Name="dockPanel42" Width="200">
-            <Label Content="Max Size" Height="25" Name="label40" Width="100" HorizontalAlignment="Left" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="300" Name="textBox31" VerticalAlignment="Top" Width="100" />
-        </DockPanel>
-        <DockPanel Grid.Row="5" Grid.Column="0" Height="30" Name="dockPanel41" Width="200">
-            <Label Content="Size" Height="25" Name="label50" Width="100" HorizontalAlignment="Left" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="" Name="textBox32" VerticalAlignment="Top" Width="100" />
-        </DockPanel>
-        <DockPanel Grid.Column="0" Height="30" Grid.Row="6" Name="dockPanel4" Width="200">
-            <Label Content="Max Ask Price" Height="30" Name="label2" Width="100" HorizontalAlignment="Left" />
-            <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox2" VerticalAlignment="Top" Width="100" />
-        </DockPanel>
-            
-
-            
-        <Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3">
-
-            <Border.Child>
-                <DockPanel Height="30" Name="dockPanel20" HorizontalAlignment="Left">
-                    <DockPanel Height="30" Name="dockPanel18" Width="60">
-                        <Label Content="CBO" Height="25" Name="label60" Width="40" HorizontalAlignment="Left" />
-                        <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox1" VerticalAlignment="Top" Width="20" />
-                    </DockPanel>
-                    <DockPanel Height="30" Name="dockPanel21" Width="60">
-                        <Label Content="ISE" Height="25" Name="label61" Width="40" />
-                        <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox2" VerticalAlignment="Top" Width="20" />
-                    </DockPanel>
-                    <DockPanel Height="30" Name="dockPanel22" Width="60">
-                        <Label Content="ASE" Height="25" Name="label62" Width="40" />
-                        <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox3" VerticalAlignment="Top" Width="20" />
-                    </DockPanel>
-                    <DockPanel Height="30" Name="dockPanel11" Width="60">
-                        <Label Content="PHS" Height="25" Name="label63" Width="40" />
-                        <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox4" VerticalAlignment="Top" Width="20" />
-                    </DockPanel>
-                </DockPanel>
-            </Border.Child>
-        </Border>
-
-
-        <Button Content="Save Rule" Grid.Row="9" Grid.ColumnSpan="2" Height="30" HorizontalAlignment="Left" Name="button1" VerticalAlignment="Top" Width="200" Click="button1_Click" />
-
-    </Grid>
+    <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="1" Width="350">
+      <Label Content="Min Core Exchange Bid Size" HorizontalAlignment="Right"  Height="30" Width="300" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox3" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="3" Width="350">
+      <Label Content="Extra Degrade before Cancel(%)" Height="30" Width="300" HorizontalAlignment="Right" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox9" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content=".05" />
+      </ComboBox>
+    </DockPanel>
+    
+    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Height="30" Grid.Row="4" Width="350">
+      <Label Content="Max Mid-Pt Ask b4 Cancel" Height="30" Width="300" HorizontalAlignment="Right" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox1" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Column="1"  Grid.ColumnSpan="2" Height="30" Grid.Row="2" Width="350">
+      <Label Content="Max Ask % Bid Size BUY Trigger(%)" Height="30" Width="300" HorizontalAlignment="Right" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox5" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content="14" />
+      </ComboBox>
+    </DockPanel>
+    <DockPanel Grid.Column="3" Height="30" Grid.Row="1">
+      <Label Content="" Height="30" Width="50" />
+      <Label Content="Exchange" Height="30" Width="50" HorizontalAlignment="Left" />
+      <Label Content="Volume" Height="30" Width="50" HorizontalAlignment="Left" />
+    </DockPanel>
+    <DockPanel Grid.Column="3" Height="30" Grid.Row="2">
+      <Label Content="Order 1:" Height="30" Width="50" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox11" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content="CBO" />
+      </ComboBox>
+      <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox5" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Column="3" Height="30" Grid.Row="3">
+      <Label Content="Order 2:" Height="30" Width="50" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox12" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content="PHS" />
+      </ComboBox>
+      <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox6" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Column="3" Height="30" Grid.Row="4">
+      <Label Content="Order 3:" Height="30" Width="50" HorizontalAlignment="Left" />
+      <ComboBox Height="30" IsEditable="True" Name="comboBox13" SelectedIndex="0" Width="50">
+	<ComboBoxItem Content="ISE" />
+      </ComboBox>
+      <TextBox Height="25" HorizontalAlignment="Left" Text="0" Name="textBox7" VerticalAlignment="Top" Width="50" />
+    </DockPanel>
+    <DockPanel Grid.Row="3" Grid.Column="0" Height="30" Width="200">
+      <Label Content="Min Size" Height="25" Width="100" HorizontalAlignment="Left" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="100" Name="textBox30" VerticalAlignment="Top" Width="100" />
+    </DockPanel>
+    <DockPanel  Grid.Row="4" Grid.Column="0" Height="30" Width="200">
+      <Label Content="Max Size" Height="25" Width="100" HorizontalAlignment="Left" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="300" Name="textBox31" VerticalAlignment="Top" Width="100" />
+    </DockPanel>
+    <DockPanel Grid.Row="5" Grid.Column="0" Height="30" Width="200">
+      <Label Content="Size" Height="25" Width="100" HorizontalAlignment="Left" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="" Name="textBox32" VerticalAlignment="Top" Width="100" />
+    </DockPanel>
+    <DockPanel Grid.Column="0" Height="30" Grid.Row="6" Width="200">
+      <Label Content="Max Ask Price" Height="30" Width="100" HorizontalAlignment="Left" />
+      <TextBox Height="25" HorizontalAlignment="Left" Text="600" Name="textBox2" VerticalAlignment="Top" Width="100" />
+    </DockPanel>
+    <Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3">
+      <Border.Child>
+	<DockPanel Height="30" HorizontalAlignment="Left">
+	  <DockPanel Height="30" Width="60">
+	    <Label Content="CBO" Height="25" Width="40" HorizontalAlignment="Left" />
+	    <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox1" VerticalAlignment="Top" Width="20" />
+	  </DockPanel>
+	  <DockPanel Height="30" Width="60">
+	    <Label Content="ISE" Height="25" Width="40" />
+	    <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox2" VerticalAlignment="Top" Width="20" />
+	  </DockPanel>
+	  <DockPanel Height="30" Width="60">
+	    <Label Content="ASE" Height="25" Width="40" />
+	    <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox3" VerticalAlignment="Top" Width="20" />
+	  </DockPanel>
+	  <DockPanel Height="30" Width="60">
+	    <Label Content="PHS" Height="25" Width="40" />
+	    <CheckBox Height="25" HorizontalAlignment="Left"  Name="checkBox4" VerticalAlignment="Top" Width="20" />
+	  </DockPanel>
+	</DockPanel>
+      </Border.Child>
+    </Border>
+    <Button Content="Save Rule" Grid.Row="9" Grid.ColumnSpan="2" Height="30" HorizontalAlignment="Left" Name="saveButton" VerticalAlignment="Top" Width="200" Click="saveButton_Click" />
+  </Grid>
 </Window>

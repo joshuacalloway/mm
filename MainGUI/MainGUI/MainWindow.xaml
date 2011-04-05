@@ -1,33 +1,32 @@
 ﻿<Window x:Class="WpfApplication1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Option Market Maker ( version 0.02 - April. 3, 2011 )" Height="402" Width="700">
-    <Grid Height="400" Name="grid1" Width="650">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="350*" />
-            <ColumnDefinition Width="300*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="34"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <DockPanel Grid.Row="0" Grid.Column="0"  Name="dockPanel1" Grid.ColumnSpan="2">
-            <DockPanel Height="34" Name="dockPanel2" Width="350">
-                <DockPanel.Margin>
-                    <Thickness Left="3" Right="3" Top="2" Bottom="2"/>
-                </DockPanel.Margin>
-                <Label Content="Rule Name" Height="26" Name="label1" Width="75" />
-                <ComboBox Height="26" IsEditable="True" KeyDown="comboBox2_KeyDown"  TextInput="comboBox2_TextInput" TargetUpdated="comboBox2_TargetUpdated" Name="comboBox2" Width="200" />
-                <Button Content="Edit"  IsEnabled="False" Height="25" Name="button2" Width="50" Click="button2_Click" />
-            </DockPanel>
-            <DockPanel Height="34" Name="dockPanel3" Width="250">
-                <Label Content="Option" Height="25" Name="label2" Width="75" />
-                <TextBox Height="25" HorizontalAlignment="Left" Text=".SPY1104195C" Name="textBox2" VerticalAlignment="Top" Width="125" />
-                <Button Content="Watch" Name="button1" Width="50" Height="25" />
-            </DockPanel>
-        </DockPanel>
-     
-    </Grid>
+        Title="Option Market Maker ( version 0.03 - April. 4, 2011 )" Height="402" Width="700">
+  <Grid Height="400" Width="650">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="350*" />
+      <ColumnDefinition Width="300*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="34"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+      <DockPanel Height="34" Width="350">
+	<DockPanel.Margin>
+	  <Thickness Left="3" Right="3" Top="2" Bottom="2"/>
+	</DockPanel.Margin>
+	<Label Content="Rule Name" Height="26" Width="75" />
+	<ComboBox Height="26" IsEditable="True" KeyDown="ruleNameCombBox_KeyDown" Name="ruleNameComboBox" Width="200" />
+	<Button Content="Edit"  IsEnabled="False" Height="25" Name="editRuleButton" Width="50" Click="editRuleButton_Click" />
+      </DockPanel>
+      <DockPanel Height="34" Width="250">
+	<Label Content="Option" Height="25" Width="75" />
+	<TextBox Height="25" HorizontalAlignment="Left" Text=".SPY1104195C" Name="optionSymbolTextBox" VerticalAlignment="Top" Width="125" />
+	<Button Content="Watch" Name="watchButton" Width="50" Height="25" />
+      </DockPanel>
+    </DockPanel>
+  </Grid>
 </Window>
