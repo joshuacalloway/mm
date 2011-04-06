@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace WpfApplication1
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for EditRuleWindow.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class EditRuleWindow : Window
     {
-        public Window1()
+        public EditRuleWindow()
         {
             InitializeComponent();
 	    string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);

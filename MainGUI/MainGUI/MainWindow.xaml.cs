@@ -19,27 +19,26 @@ namespace WpfApplication1
     /// </summary>
     public partial class MainWindow : Window
     {
-        Window1 editWindow = new Window1();
         public MainWindow()
         {
             InitializeComponent();
+	    string appPath = System.IO.Path.GetDirectoryName(
+							     System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+	    Rule.Source = new Uri(appPath + @"\Rules.xml");
         }
 
-        private void editRuleButton_Click(object sender, RoutedEventArgs e)
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-//            Rule rule = new Rule();
-//            rule.name = ruleNameComboBox.Text;
-//            editWindow.rule = rule;
-//            editWindow.update();
-            editWindow.Show();
-        //    editWindow.Activate();
-        
-        }
+	    string source = Rule.Source.LocalPath;
+	    Rule.Document.Save(source);
+	    Console.WriteLine("Save Button Clicked " + source);
+	}
 
         private void ruleNameCombBox_KeyDown(object sender, KeyEventArgs e)
         {
             Console.WriteLine("comboBox2_KeyDown");
-            editRuleButton.IsEnabled = true;
+           // editRuleButton.IsEnabled = true;
         }
     }
 }
