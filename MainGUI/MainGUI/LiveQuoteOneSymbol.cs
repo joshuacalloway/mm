@@ -28,12 +28,7 @@ namespace mm
 
 
         public override void Run( ToolkitApp app ) {
-
-        }
-        public  void Run( System.Windows.Controls.TextBox atext, ToolkitApp app )
-        {
-	    text = atext;
-
+        
             _numDisplayed = 0;
             _numIgnored = 0;
             using (LiveQuoteTable lq = new LiveQuoteTable(app))

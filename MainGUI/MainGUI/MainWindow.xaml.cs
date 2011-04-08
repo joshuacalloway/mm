@@ -46,7 +46,7 @@ namespace WpfApplication1
         private void autobidButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Autobid Button Clicked ");
-            //orderManager.autobid(MonitorTextBox, optionSymbolTextBox.Text);
+            orderManager.autobid(Terminal, optionSymbolTextBox.Text);
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)

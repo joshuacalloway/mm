@@ -24,6 +24,9 @@ namespace mm
            // Background = Color.Black;
            // Foreground = Color.Green;
             IsReadOnly = true;
+            
+            VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+
            
             //BackColor = Color.Black;
            // ForeColor = Color.Green;
@@ -32,6 +35,7 @@ namespace mm
            // WordWrap = false;
            // ReadOnly = true;
         }
+
 
     /*
      * protected override void OnKeyDown(KeyEventArgs e)
@@ -48,10 +52,14 @@ namespace mm
             }
         }
         */
+
+
         public void WriteLine(string st)
         {
             Text += st + "\r\n";
             SelectionStart = Text.Length;
+        
+           
             //ScrollToCaret();
             
         }

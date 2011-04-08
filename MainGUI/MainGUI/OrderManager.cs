@@ -40,20 +40,20 @@ namespace mm
 	//TicksTimeAndSales ticks = new TicksTimeAndSales();
 	LiveQuoteOneSymbol ticks = new LiveQuoteOneSymbol();
 	Thread orderManagerThread;
-	System.Windows.Controls.TextBox text;
+	Terminal terminal;
 	string symbol;
 
 	private void autobidInBackground()
         {
 	    Console.WriteLine("autobidInBackground");
 	    // ticks.OnWriteLine += new EventHandler<string>(OnWriteLine);
-	    ticks.Run(text, app);
+	    ticks.RunOnTerminal(terminal, app, symbol);
 
 	}
 
-        public void autobid(System.Windows.Controls.TextBox text, string symbol)
+        public void autobid(Terminal aterminal, string symbol)
         {
-	    this.text = text;
+	    this.terminal = aterminal;
 	    this.symbol = symbol;
 	    ticks._symbol=symbol;
 	    orderManagerThread = new Thread(new ThreadStart(autobidInBackground));

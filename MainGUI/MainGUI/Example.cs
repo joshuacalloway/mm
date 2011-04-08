@@ -61,17 +61,25 @@ namespace mm
         delegate void DelWriteLine(string st);
         DelWriteLine _writeLine;
 
-        // This is our replacement for System.Console.WriteLine; it sends its output
-        // to the on-screen terminal emulator.  Because the example is running in a worker
-        // thread, we must marshall back to the GUI thread.
+	protected void WriteLineNow(string msg) {
+	    _term.Text += msg;
+	}
+
+	private delegate void TextChanger(string msg);
+
         protected void WriteLine(string fmt, params object[] args)
         {
-            if (_term != null && _writeLine != null)
-            {
-                string st = string.Format(fmt, args);
-           //     _term.BeginInvoke(_writeLine, new object[] { st });
-            }
+	    if (_term != null && _writeLine != null) {
+		string st = string.Format(fmt, args);
+		if (_term.Dispatcher.CheckAccess()) {
+		    _term.Text += st;
+		}
+		else {
+		    _term.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new TextChanger(this.WriteLineNow), st);
+		}
+	    }
         }
+
 
         // This is our replacement for System.Console.ReadLine; it gets its input
         // from the on-screen terminal emulator.  Because the example is running in a
@@ -90,17 +98,25 @@ namespace mm
         System.Threading.AutoResetEvent _doneEvent = new System.Threading.AutoResetEvent(false);
         System.Threading.AutoResetEvent _stopEvent = new System.Threading.AutoResetEvent(false);
 
+
+        delegate void ClearTerm();
+
+	private void ClearTerminal() {
+	    _term.Clear();
+	}
+
         // Launch a worker thread, and use it to run the current example
         // on the given terminal.  When the thread completes, it marshals back
         // to the GUI thread to call the RunDone notifier below, which cleans
         // everything up.
-        public void RunOnTerminal(IWin32Window form, Terminal term, ToolkitApp app, string symbol)
+        public void RunOnTerminal(Terminal term, ToolkitApp app, string symbol)
         {
-            term.Clear();
+	   
 
-            _form = form;
             _symbol = symbol;
             _term = term;
+	    term.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new ClearTerm(this.ClearTerminal));
+            
             _onEnterHandler = new EventHandler<EventArgs>(_term_OnEnter);
             _term.OnEnter += _onEnterHandler;
             _runDone = new DelRunDone(RunDone);
@@ -109,7 +125,7 @@ namespace mm
                     delegate(object x)
                     {
                         Run( app );
-                //        _term.BeginInvoke(_runDone, new object[0] );
+                        _term.Dispatcher.BeginInvoke(_runDone, new object[0] );
                     }
                 );
         }

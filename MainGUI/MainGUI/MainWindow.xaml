@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
-        Title="Option Market Maker ( version 0.17 - April. 8, 2011 )" Height="Auto" Width="Auto">
+        Title="Option Market Maker ( version 0.18 - April. 8, 2011 )" Height="Auto" Width="Auto">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -14,15 +14,15 @@
       <Button Content="AutoBid" Name="autobidButton" Width="50" Height="25" Click="autobidButton_Click"/>
     </StackPanel>
     <GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Width="300"
-	      Background="LightGray" DockPanel.Dock="Right" Name="TerminalContainerGroupBox">
+	      Background="LightGray" DockPanel.Dock="Left" Name="TerminalContainerGroupBox">
       <GroupBox.Header>               
 	Monitor
       </GroupBox.Header>
-            <mm:Terminal Visibility="Visible" Background="Black" Foreground="Green"  x:Name="Terminal">this is some text</mm:Terminal>
+            <mm:Terminal Visibility="Visible" Background="Black" Foreground="Green"  x:Name="Terminal"></mm:Terminal>
     </GroupBox>
      
 
-        <Grid Grid.Row="1" Height="Auto" Name="EditRulesGrid" Background="#0F000000">
+    <Grid DockPanel.Dock="Right" Height="Auto" Name="EditRulesGrid" Background="#0F000000">
       
       <Grid.ColumnDefinitions>
 	<ColumnDefinition Width="200*" />

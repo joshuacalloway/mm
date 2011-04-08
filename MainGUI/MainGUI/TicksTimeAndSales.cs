@@ -47,38 +47,24 @@ namespace mm
         {
         }
 
-//         public event EventHandler<DataEventArgs<string>> OnWriteLine;
-
-// 	protected override void RaiseOnData(string item, IDataBlock block, bool isRequestData)
-//         {
-//             OnWriteLine.Raise<DataEventArgs<string>>( this, new DataEventArgs<string>( block, isRequestData, item ) );
-//         }
-// 1
-
-//     }
-        System.Windows.Controls.TextBox text;
-
-        public override void Run( ToolkitApp app ) {
-
-        }
-        public  void Run( System.Windows.Controls.TextBox atext, ToolkitApp app )
+        public override void Run(ToolkitApp app)
         {
-	    text = atext;
-            _numDisplayed = 0;
-            using (TicksTable table = new TicksTable(app))
             {
-                table.WantData( table.TqlForTimeAndSales(_symbol, DateTime.Now, null, null, null, TickType.Bid, TickType.Ask, TickType.Trade), 
-                    true, true);
-                table.OnTick += new EventHandler<DataEventArgs<TicksRecord>>(table_OnTick);
-                table.OnDead += new EventHandler<EventArgs>(table_OnDead);
+                _numDisplayed = 0;
+                using (TicksTable table = new TicksTable(app))
+                {
+                    table.WantData(table.TqlForTimeAndSales(_symbol, DateTime.Now, null, null, null, TickType.Bid, TickType.Ask, TickType.Trade),
+                        true, true);
+                    table.OnTick += new EventHandler<DataEventArgs<TicksRecord>>(table_OnTick);
+                    table.OnDead += new EventHandler<EventArgs>(table_OnDead);
 
-                table.Start();
+                    table.Start();
 
-                bool rc = WaitAny( 30000, _done);
-                if (rc == false)
-                    WriteLine("TIMED OUT OR STOPPED BEFORE {0} UPDATES RECEIVED.", _maxBlocksToDisplay);
+                    bool rc = WaitAny(30000, _done);
+                    if (rc == false)
+                        WriteLine("TIMED OUT OR STOPPED BEFORE {0} UPDATES RECEIVED.", _maxBlocksToDisplay);
+                }
             }
-
             WriteLine("DONE.");
         }
 
@@ -93,23 +79,7 @@ namespace mm
         long _numDisplayed = 0;
         const int _maxRowsPerBlock = 5;
         const int _maxBlocksToDisplay = 20;
-	private delegate void TextChanger(string msg);
 
-	protected void WriteLineNow(string msg) {
-	    text.Text += msg;
-	}
-
-        protected void WriteLine(string fmt, params object[] args)
-        {
-	    string st = string.Format(fmt, args);
-	    if (text.Dispatcher.CheckAccess()) {
-		text.Text += st;
-	    }
-	    else {
-		text.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new TextChanger(this.WriteLineNow), st);
-	    }
-	    
-        }
 
         void table_OnTick(object sender, DataEventArgs<TicksRecord> e)
         {
