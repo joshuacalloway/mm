@@ -63,8 +63,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Example.cs" />
+    <Compile Include="ExampleCategory.cs" />
+    <Compile Include="LiveQuoteOneSymbol.cs" />
     <Compile Include="OrderManager.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Terminal.cs" />
+    <Compile Include="TicksTimeAndSales.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

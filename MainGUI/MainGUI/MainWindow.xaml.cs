@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows;
-using System.Windows.Controls;
+//using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -17,6 +17,7 @@ using RealTick.Api.Domain.Livequote;
 using RealTick.Api.Application;
 using RealTick.Api.ClientAdapter;
 
+using mm;
 
 namespace WpfApplication1
 {
@@ -25,59 +26,28 @@ namespace WpfApplication1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private class TempForm : Form
-        {
-            LiveQuoteTable table;
-            ClientAdapterToolkitApp app;
 
-            public TempForm()
-            {
-                app = new ClientAdapterToolkitApp();
-                table = new LiveQuoteTable(app);
-                table.OnData += new EventHandler<RealTick.Api.Domain.DataEventArgs<LivequoteRecord>>(table_OnData);
 
-                table.OnLive += new EventHandler<EventArgs>(table_OnLive);
-                table.Start(this);
-                Console.WriteLine("TempForm() exit");
-            }
-
-            void table_OnLive(object sender, EventArgs e)
-            {
-                Console.WriteLine("CONNECTED OK");
-            }
-
-            // void table_OnDead(object sender, EventArgs e)
-            // {
-            //     Log("CONNECTION FAILED OR LOST");
-            // }
-
-            void table_OnData(object sender,  RealTick.Api.Domain.DataEventArgs<LivequoteRecord> e)
-            {
-                foreach (LivequoteRecord rec in e)
-                {
-                    if (rec.Trdprc1 != null)
-                        Console.WriteLine("TRADE {0}", rec.Trdprc1);
-                       // Log("TRADE {0}", rec.Trdprc1);
-                    if (rec.Bid != null)
-                        Console.WriteLine("BID {0} ASK {1}", rec.Bid, rec.Ask);
-                        //Log("BID {0} ASK {1}", rec.Bid, rec.Ask);
-                }
-            }
-
-        }
-
-        TempForm form;
-
+        OrderManager orderManager = new OrderManager();
+	//Terminal terminal = new Terminal();
 
         public MainWindow()
         {
             InitializeComponent();
-	    string appPath = System.IO.Path.GetDirectoryName(
+   	    string appPath = System.IO.Path.GetDirectoryName(
 							     System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
 	    Rule.Source = new Uri(appPath + @"\Rules.xml");
-	    //	    form = new TempForm();
+           // t1.Background
+            //terminal.Width = 200;
+            //terminal.Height = 600;
+      //  TerminalContainerGroupBox. = terminal;
         }
 
+        private void autobidButton_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Autobid Button Clicked ");
+            //orderManager.autobid(MonitorTextBox, optionSymbolTextBox.Text);
+        }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
