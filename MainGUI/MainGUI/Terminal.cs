@@ -26,11 +26,11 @@ namespace mm
             IsReadOnly = true;
             
             VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
            
             //BackColor = Color.Black;
            // ForeColor = Color.Green;
-            //Font = new Font(FontFamily.GenericMonospace, 12);
+         //Font = 
            // ScrollBars = ScrollBars.Both;
            // WordWrap = false;
            // ReadOnly = true;
