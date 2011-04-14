@@ -37,15 +37,19 @@ namespace WpfApplication1
    	    string appPath = System.IO.Path.GetDirectoryName(
 							     System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
 	    Rule.Source = new Uri(appPath + @"\Rules.xml");
-           // t1.Background
-            //terminal.Width = 200;
-            //terminal.Height = 600;
-      //  TerminalContainerGroupBox. = terminal;
-        }
+	}
 
         private void autobidButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Autobid Button Clicked ");
+            OrderManager.Settings settings = new OrderManager.Settings();
+            settings.MinTotalBidSizeTenCent = Convert.ToInt32(minTotalBidSizeTenCentTextBox.Text );
+            settings.MinTotalBidSizeFiveCent = Convert.ToInt32(minTotalBidSizeFiveCentTextBox.Text);
+	    settings.MaxAskSizeBuyTriggerFiveCent = Convert.ToInt32(maxAskSizeBuyFiveCentTriggerTextBox.Text);
+	    settings.MaxAskSizeBuyTriggerTenCent = Convert.ToInt32(maxAskSizeBuyTenCentTriggerTextBox.Text);
+	      
+
+            orderManager.settings = settings;
             orderManager.autobid(Terminal, optionSymbolTextBox.Text);
         }
 
