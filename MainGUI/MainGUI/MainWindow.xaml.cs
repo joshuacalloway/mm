@@ -38,6 +38,12 @@ namespace WpfApplication1
 	    Rule.Source = new Uri(appPath + @"\Rules.xml");
 	}
 
+
+        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        {
+	  orderManager.Cancel();
+	}
+
         private void autobidButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Autobid Button Clicked ");
@@ -47,7 +53,7 @@ namespace WpfApplication1
 	    rules.MaxAskSizeBuyTriggerFiveCent = Convert.ToInt32(maxAskSizeBuyFiveCentTriggerTextBox.Text);
 	    rules.MaxAskSizeBuyTriggerTenCent = Convert.ToInt32(maxAskSizeBuyTenCentTriggerTextBox.Text);
 	    rules.MaxAskPrice = Convert.ToDouble(maxAskPriceTextBox.Text);
-
+	    rules.MinCoreExchangeBidSize = Convert.ToInt32(MinCoreExchangeBidSizeTextBox.Text);
             orderManager.rules = rules;
 	    orderManager.WriteLineListeners += Terminal.OnWriteLine;
 	    Terminal.Clear();

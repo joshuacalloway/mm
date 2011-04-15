@@ -75,6 +75,7 @@ namespace mm
     public void WriteHeader() {
       StringBuilder header = new StringBuilder();
       header.Append(String.Format("{0,12}|", "TIME"));
+      header.Append(String.Format("{0,15}|", "TICKER"));
       header.Append(String.Format("{0,8}|", "BID SZ"));
       header.Append(String.Format("{0,8}|", "ASK SZ"));
       header.Append(String.Format("{0,5}|", "MRKT"));
