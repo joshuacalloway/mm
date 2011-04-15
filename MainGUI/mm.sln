@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainGUI", "MainGUI\MainGUI.csproj", "{2E043E03-F411-4D9F-8ED2-DDC132FF372D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mmgui", "MainGUI\mmgui.csproj", "{2E043E03-F411-4D9F-8ED2-DDC132FF372D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
