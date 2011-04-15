@@ -29,7 +29,6 @@ namespace WpfApplication1
 
 
         OrderManager orderManager = new OrderManager();
-	//Terminal terminal = new Terminal();
 
         public MainWindow()
         {
@@ -42,15 +41,18 @@ namespace WpfApplication1
         private void autobidButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Autobid Button Clicked ");
-            OrderManager.Settings settings = new OrderManager.Settings();
-            settings.MinTotalBidSizeTenCent = Convert.ToInt32(minTotalBidSizeTenCentTextBox.Text );
-            settings.MinTotalBidSizeFiveCent = Convert.ToInt32(minTotalBidSizeFiveCentTextBox.Text);
-	    settings.MaxAskSizeBuyTriggerFiveCent = Convert.ToInt32(maxAskSizeBuyFiveCentTriggerTextBox.Text);
-	    settings.MaxAskSizeBuyTriggerTenCent = Convert.ToInt32(maxAskSizeBuyTenCentTriggerTextBox.Text);
-	      
+            OrderManager.Rules rules = new OrderManager.Rules();
+            rules.MinTotalBidSizeTenCent = Convert.ToInt32(minTotalBidSizeTenCentTextBox.Text );
+            rules.MinTotalBidSizeFiveCent = Convert.ToInt32(minTotalBidSizeFiveCentTextBox.Text);
+	    rules.MaxAskSizeBuyTriggerFiveCent = Convert.ToInt32(maxAskSizeBuyFiveCentTriggerTextBox.Text);
+	    rules.MaxAskSizeBuyTriggerTenCent = Convert.ToInt32(maxAskSizeBuyTenCentTriggerTextBox.Text);
+	    rules.MaxAskPrice = Convert.ToDouble(maxAskPriceTextBox.Text);
 
-            orderManager.settings = settings;
-            orderManager.autobid(Terminal, optionSymbolTextBox.Text);
+            orderManager.rules = rules;
+	    orderManager.WriteLineListeners += Terminal.OnWriteLine;
+	    Terminal.Clear();
+	    Terminal.WriteHeader();
+            orderManager.autobid(optionSymbolTextBox.Text);
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)

@@ -9,17 +9,110 @@
 using System;
 using System.Windows.Controls;
 using System.Drawing;
+using RealTick.Api.Application;
+using RealTick.Api.ClientAdapter;
+using RealTick.Api.Domain.Livequote;
+using RealTick.Api.Domain.Order;
+using RealTick.Api.Domain.Ticks;
+using RealTick.Api.Domain;
+using RealTick.Api.Exceptions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Windows;
+using System;
+using RealTick.Api.Domain.Regional;
+using RealTick.Api.Data;
 
 namespace mm
 {
     // This is an extremely simple terminal emulator, used to let both the code and the user interaction for each
     // example look like a console application while actually running within our GUI.
-    class Terminal : TextBox
+    class Terminal : System.Windows.Controls.TextBox
     {
         public new event EventHandler<EventArgs> OnEnter;
+	//public event EventHandler<DataEventArgs<StringEvent>> WriteLineListener;
+
+        public void Clear()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                base.Clear();
+            }
+            else
+            {
+                Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new ClearDeleg(this.Clear));
+
+            }
+        }
+
+	
+    protected void WriteNow(string msg) {
+        if (Dispatcher.CheckAccess())
+        {
+            Text += msg;
+        }
+        else
+        {
+            Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new TextChanger(this.WriteNow), msg);
+        }
+    }
+
+    private delegate void ClearDeleg();
+    private delegate void TextChanger(string msg);
+    int numlines = 0;
+
+    public void WriteHeader() {
+      StringBuilder header = new StringBuilder();
+      header.Append(String.Format("{0,12}|", "TIME"));
+      header.Append(String.Format("{0,8}|", "BID SZ"));
+      header.Append(String.Format("{0,8}|", "ASK SZ"));
+      header.Append(String.Format("{0,5}|", "MRKT"));
+      header.Append(String.Format("{0,8}|", "STATUS"));
+      WriteLine(header.ToString());
+      WriteLine("----------------------------------");
+    }
+
+    public void Write(string st)
+    {
+      WriteNow( st );
+    }
+
+    public void WriteLine(string st)
+    {
+      WriteNow( st + "\r\n");
+    }
+
+    public void OnWriteLine(object sender, DataEventArgs<StringEvent> e)
+    {
+      Console.WriteLine("OnWriteLine");
+      if (numlines > 21)
+      {
+          Clear();
+          WriteHeader();
+          numlines = 1;
+      }
+      foreach (StringEvent data in e)
+      {
+          numlines += 1;
+          WriteNow(data.Msg);
+      }
+
+    }
 
         public Terminal()
         {
+	//  WriteLineListener += new EventHandler<DataEventArgs<StringEvent>>(OnWriteLine);
            // Multiline = true;
            // Background = Color.Black;
            // Foreground = Color.Green;
@@ -35,34 +128,5 @@ namespace mm
            // WordWrap = false;
            // ReadOnly = true;
         }
-
-
-    /*
-     * protected override void OnKeyDown(KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                EventHandler<EventArgs> hnd = OnEnter;
-                if (hnd != null)
-                    hnd(this, EventArgs.Empty);
-            }
-            else
-            {
-//                base.OnKeyDown(e);
-            }
-        }
-        */
-
-
-        public void WriteLine(string st)
-        {
-            Text += st + "\r\n";
-            SelectionStart = Text.Length;
-        
-           
-            //ScrollToCaret();
-            
-        }
-
     }
 }

@@ -29,12 +29,13 @@ namespace mm
 {
   class OrderManager
   {
-    public class Settings
+    public class Rules
     {
       public int MinTotalBidSizeTenCent { get; set; }
       public int MinTotalBidSizeFiveCent { get; set; }
       public int MaxAskSizeBuyTriggerFiveCent { get; set; }
       public int MaxAskSizeBuyTriggerTenCent { get; set; }
+      public double MaxAskPrice { get; set; }
 
       public string ToString()
       {
@@ -45,24 +46,28 @@ namespace mm
       }
     }
 
-    public bool WithinSettings() {
+    public bool WithinRules() {
       bool withinRules = true;
       if (market == Market.FIVE_CENT) {
-	withinRules = withinRules &&  (totalBidSize[bestBid] >= settings.MinTotalBidSizeFiveCent);
-	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * settings.MaxAskSizeBuyTriggerFiveCent * 0.01);
+	withinRules = withinRules &&  (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
+	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
       }
       if (market == Market.TEN_CENT) {
-	withinRules = withinRules &&  (totalBidSize[bestBid] >= settings.MinTotalBidSizeTenCent);
-	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * settings.MaxAskSizeBuyTriggerTenCent * 0.01);
+	withinRules = withinRules &&  (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
+	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
  
       }
       else {
 	withinRules = false;
       }
-     
+      withinRules = withinRules && toDouble(bestAsk) < rules.MaxAskPrice;
       return withinRules;
     }
-    public Settings settings { get; set; }
+    private double toDouble(Price? p)
+    {
+        return Convert.ToDouble(p.ToString());
+    }
+    public Rules rules { get; set; }
 
     enum Market
     {
@@ -73,69 +78,46 @@ namespace mm
 
     Market market;
     ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
-    RegionalTable lq;
+    RegionalTable querytable;
     Thread orderManagerThread;
-    Terminal terminal;
     string symbol;
     bool running=false;
 
+    public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
+
     public OrderManager() {
-      lq = new RegionalTable(app);
+      querytable = new RegionalTable(app);
     }
 
-    protected void WriteLineNow(string msg) {
-      terminal.Text += msg;
-      terminal.Text += "\n";
-      Console.WriteLine("B: " + msg);
-    }
-
-    protected void WriteNow(string msg) {
-      terminal.Text += msg;
-      Console.Write("B: " + msg);
-    }
-
-    private delegate void TextChanger(string msg);
-    
 
     protected void Write(string fmt, params object[] args)
     {
       string st = string.Format(fmt, args);
-      if (terminal.Dispatcher.CheckAccess()) {
-	Console.Write("A: " + st);
-	terminal.Text += st;
-      }
-      else {
-	terminal.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new TextChanger(this.WriteNow), st);
-      }
-    }    
+      EventHandler<DataEventArgs<StringEvent>> hnd = WriteLineListeners;
+      if (hnd != null)
+	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st),true));
+    }
 
     protected void WriteLine(string fmt, params object[] args)
     {
-      string st = string.Format(fmt, args);
-      if (terminal.Dispatcher.CheckAccess()) {
-	Console.WriteLine("A: " + st);
-	terminal.Text += st;
-	terminal.Text += "\n";
-      }
-      else {
-	terminal.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new TextChanger(this.WriteLineNow), st);
-      }
+      fmt += "\n";
+      Write(fmt, args);
     }    
     
     private void autobidInBackground()
     {
       Console.WriteLine("autobidInBackground");
-      string tql = lq.TqlForBidAskTrade(symbol, null, "A","B","C","D","E","I","J","K","M","N","P","Q","W","X","Y");
+      string tql = querytable.TqlForBidAskTrade(symbol, null, "A","B","C","D","E","I","J","K","M","N","P","Q","W","X","Y");
 
-      lq.WantData(tql, true, true);
-      lq.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(lq_OnData);
-      lq.OnDead += new EventHandler<EventArgs>(lq_OnDead);
-      if (!lq.Connected) {
-	lq.Start();  // 1 minutes
+      querytable.WantData(tql, true, true);
+      querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(querytable_OnData);
+      querytable.OnDead += new EventHandler<EventArgs>(querytable_OnDead);
+      if (!querytable.Connected) {
+	querytable.Start();  // 1 minutes
       }
     }
 
-    void lq_OnDead(object sender, EventArgs e)
+    void querytable_OnDead(object sender, EventArgs e)
     {
       WriteLine("CONNECTION FAILED.");
     }
@@ -191,7 +173,7 @@ namespace mm
       }
     }
 
-    void lq_OnData(object sender, DataEventArgs<RegionalRecord> args)
+    void querytable_OnData(object sender, DataEventArgs<RegionalRecord> args)
     {
       foreach (RegionalRecord data in args) {
 	var bld = new StringBuilder();
@@ -208,7 +190,7 @@ namespace mm
 	}
       */
       string status;
-      if (WithinSettings())
+      if (WithinRules())
 	{
 	  status = "within rules, will place an order.";
 	}
@@ -235,21 +217,10 @@ namespace mm
       WriteLine(line.ToString());
     }
 
-    public void autobid(Terminal aterminal, string symbol)
+    public void autobid(string symbol)
     {
-      this.terminal = aterminal;
       this.symbol = symbol;
-      aterminal.Clear();
       this.running=true;
-      StringBuilder header = new StringBuilder();
-      header.Append(String.Format("{0,12}|", "TIME"));
-      header.Append(String.Format("{0,8}|", "BID SZ"));
-      header.Append(String.Format("{0,8}|", "ASK SZ"));
-      header.Append(String.Format("{0,5}|", "MRKT"));
-      header.Append(String.Format("{0,8}|", "STATUS"));
-      WriteLine(header.ToString());
-      WriteLine("----------------------------------");
-
       autobidInBackground();
     }
 

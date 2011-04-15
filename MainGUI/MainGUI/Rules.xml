@@ -13,9 +13,9 @@
   </Routes>
   <MaxAskPrice>1.00</MaxAskPrice>
   <MinBidAskWidth>0.05</MinBidAskWidth>
-  <MaxAskSizeBuyTriggerFiveCent>14</MaxAskSizeBuyTriggerFiveCent>
+  <MaxAskSizeBuyTriggerFiveCent>15</MaxAskSizeBuyTriggerFiveCent>
   <ExtraDegradeCancelFiveCent>5</ExtraDegradeCancelFiveCent>
-  <MaxAskSizeBuyTriggerTenCent>800</MaxAskSizeBuyTriggerTenCent>
+  <MaxAskSizeBuyTriggerTenCent>10</MaxAskSizeBuyTriggerTenCent>
   <MaxMidPtAskSizeCancelTenCent>600</MaxMidPtAskSizeCancelTenCent>
   <MinTotalBidSizeFiveCent>2000</MinTotalBidSizeFiveCent>
   <MinTotalBidSizeTenCent>1500</MinTotalBidSizeTenCent>
