@@ -48,47 +48,56 @@ namespace mm
       }
     }
 
-    public bool WithinRules() {
+    public bool WithinRules()
+    {
       bool withinRules = true;
-      if (market == Market.FIVE_CENT) {
-	withinRules = withinRules &&  (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
-	WriteLine("(totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
-	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
-	WriteLine("(totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
-      }
-      if (market == Market.TEN_CENT) {
-	withinRules = withinRules &&  (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
-	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
- 
-      }
-      else {
-	withinRules = false;
-      }
-      WriteLine("toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
+      if (market == Market.FIVE_CENT)
+	{
+	  withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
+	  MessageAppEx.LogSev(Severity.Trace, "(totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
+	  withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
+
+	  MessageAppEx.LogSev(Severity.Trace, "(totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
+
+
+	}
+      if (market == Market.TEN_CENT)
+	{
+	  withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
+	  withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
+
+	}
+      else
+	{
+	  withinRules = false;
+	}
+      MessageAppEx.LogSev(Severity.Trace, "toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
       withinRules = withinRules && toDouble(bestAsk) < rules.MaxAskPrice;
-      WriteLine("(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
+      MessageAppEx.LogSev(Severity.Trace, "(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
       withinRules = withinRules || (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize);
       return withinRules;
     }
     private double toDouble(Price? p)
     {
-        return Convert.ToDouble(p.ToString());
+      return Convert.ToDouble(p.ToString());
     }
     public Rules rules { get; set; }
 
     enum Market { FIVE_CENT, TEN_CENT, UNKNOWN }
     Market market;
 
-    enum State { IDLE, WATCHING, ORDER_PLACED, CANCEL_ORDER };
-    State state = State.IDLE;
+    enum State { Idle, Watching, OrderPlaced };
+    State state = State.Idle;
     ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
     RegionalTable querytable;
     string symbol;
-    
+
     public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
 
-    public OrderManager() {
+    public OrderManager()
+    {
       querytable = new RegionalTable(app);
+      executor = new OrderExecutor(app);
     }
 
 
@@ -97,15 +106,15 @@ namespace mm
       string st = string.Format(fmt, args);
       EventHandler<DataEventArgs<StringEvent>> hnd = WriteLineListeners;
       if (hnd != null)
-	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st),true));
+	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st), true));
     }
 
     protected void WriteLine(string fmt, params object[] args)
     {
       fmt += "\n";
       Write(fmt, args);
-    }    
-    
+    }
+
     void querytable_OnDead(object sender, EventArgs e)
     {
       WriteLine("CONNECTION FAILED.");
@@ -120,86 +129,92 @@ namespace mm
     OfferSize totalAskSize = new OfferSize();
 
 
-    Dictionary<string, RegionalRecord> dataByExchanges = new Dictionary<string,RegionalRecord>();
+    Dictionary<string, RegionalRecord> dataByExchanges = new Dictionary<string, RegionalRecord>();
     Price? bestBid = Price.Zero;
     Price? bestAsk = new Price("9999999");
 
-    private void calculateTotalBidAskSizes() {
+    private void calculateTotalBidAskSizes()
+    {
       totalBidSize = new OfferSize();
       totalAskSize = new OfferSize();
       bestBid = Price.Zero;
       bestAsk = new Price("9999999");
 
-      foreach (var data in dataByExchanges.Values) {
-	if (data.RegionalBid != null) {
-	  if (data.RegionalBid > bestBid) {
-	    bestBid = data.RegionalBid;
-	  } 
-	  if (!totalBidSize.ContainsKey(data.RegionalBid)) totalBidSize[data.RegionalBid] = 0;
-	  totalBidSize[data.RegionalBid] += data.RegionalBidsize;
+      foreach (var data in dataByExchanges.Values)
+	{
+	  if (data.RegionalBid != null)
+	    {
+	      if (data.RegionalBid > bestBid)
+		{
+		  bestBid = data.RegionalBid;
+		}
+	      if (!totalBidSize.ContainsKey(data.RegionalBid)) totalBidSize[data.RegionalBid] = 0;
+	      totalBidSize[data.RegionalBid] += data.RegionalBidsize;
+	    }
+	  if (data.RegionalAsk != null)
+	    {
+	      if (data.RegionalAsk < bestAsk)
+		{
+		  bestAsk = data.RegionalAsk;
+		}
+	      if (!totalAskSize.ContainsKey(data.RegionalAsk)) totalAskSize[data.RegionalAsk] = 0;
+	      totalAskSize[data.RegionalAsk] += data.RegionalAsksize;
+	    }
 	}
-	if (data.RegionalAsk != null) {
-          if (data.RegionalAsk < bestAsk) {
-	    bestAsk = data.RegionalAsk;
-	  }
-	  if (!totalAskSize.ContainsKey(data.RegionalAsk)) totalAskSize[data.RegionalAsk] = 0;
-	  totalAskSize[data.RegionalAsk] += data.RegionalAsksize;
-	}
-      }
       var spread = bestAsk - bestBid;
-      Price? fiveCent = new Price( 5, Basecode.Cents);
+      Price? fiveCent = new Price(5, Basecode.Cents);
       Price? tenCent = new Price(10, Basecode.Cents);
-      if (spread == fiveCent) {
-	market = Market.FIVE_CENT;
-      }
-      else if (spread == tenCent) {
-	market = Market.TEN_CENT;
-      }
-      else {
-	market = Market.UNKNOWN;
-      }
+      if (spread == fiveCent)
+	{
+	  market = Market.FIVE_CENT;
+	}
+      else if (spread == tenCent)
+	{
+	  market = Market.TEN_CENT;
+	}
+      else
+	{
+	  market = Market.UNKNOWN;
+	}
     }
 
     void querytable_OnData(object sender, DataEventArgs<RegionalRecord> args)
     {
-      foreach (RegionalRecord data in args) {
-	var bld = new StringBuilder();
-	dataByExchanges[data.RegionalExchid] = data;
-      }
+      foreach (RegionalRecord data in args)
+	{
+	  var bld = new StringBuilder();
+	  dataByExchanges[data.RegionalExchid] = data;
+	}
 
       calculateTotalBidAskSizes();
       placeCancelOrder();
     }
+    OrderExecutor executor;
+ 
+    private void placeCancelOrder()
+    {
 
-    private void placeCancelOrder() {
-      string status;
-      if (WithinRules() && state == State.WATCHING) {
-	status = "placing order";
-	state = State.ORDER_PLACED;
+      if (WithinRules() && state == State.Watching) {
+	executor.placeOrder(symbol);
+    state = State.OrderPlaced;
       }
-      else if (!WithinRules() && state == State.ORDER_PLACED) {
-	status = "canceling order";
-	state = State.CANCEL_ORDER;
-      }
-      else if (state == State.CANCEL_ORDER) {
-	state = State.WATCHING;
-      } 
-	
+      else if (!WithinRules() && state == State.OrderPlaced)
+	{
+          executor.cancelOrder();
+          state = State.Watching;
+	}
       StringBuilder line = new StringBuilder();
       line.Append(String.Format("{0,12}|", String.Format("{0:H:mm:ss}", DateTime.Now)));
       line.Append(String.Format("{0,15}|", symbol));
       line.Append(String.Format("{0,8}|", totalBidSize[bestBid]));
       line.Append(String.Format("{0,8}|", totalAskSize[bestAsk]));
-      if (market == Market.FIVE_CENT)
-      {
+      if (market == Market.FIVE_CENT) {
 	line.Append(String.Format("{0,5}|", 0.05));
       }
-      else if (market == Market.TEN_CENT)
-      {
+      else if (market == Market.TEN_CENT) {
 	line.Append(String.Format("{0,5}|", 0.1));
       }
-      else
-      {
+      else {
 	line.Append(String.Format("{0,5}|", "?"));
       }
       line.Append(state);
@@ -209,8 +224,8 @@ namespace mm
     public void autobid(string symbol)
     {
       this.symbol = symbol;
-      this.state = State.WATCHING;
-      string tql = querytable.TqlForBidAskTrade(symbol, null, "A","B","C","D","E","I","J","K","M","N","P","Q","W","X","Y");
+      this.state = State.Watching;
+      string tql = querytable.TqlForBidAskTrade(symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");
 
       querytable.WantData(tql, true, true);
       querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(querytable_OnData);
@@ -220,9 +235,10 @@ namespace mm
       }
     }
 
-    public void Cancel() {
+    public void Cancel()
+    {
       querytable.Stop();
-      this.state = State.IDLE;
+      this.state = State.Idle;
     }
   }
 }

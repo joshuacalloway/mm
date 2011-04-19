@@ -61,6 +61,7 @@ namespace mm
         if (Dispatcher.CheckAccess())
         {
             Text += msg;
+            MessageAppEx.LogSev(Severity.Info, msg);
         }
         else
         {
