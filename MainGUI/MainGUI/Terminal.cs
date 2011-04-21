@@ -34,7 +34,9 @@ using System;
 using RealTick.Api.Domain.Regional;
 using RealTick.Api.Data;
 
-namespace mm
+using mm;
+
+namespace mmgui
 {
     // This is an extremely simple terminal emulator, used to let both the code and the user interaction for each
     // example look like a console application while actually running within our GUI.

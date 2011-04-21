@@ -7,6 +7,7 @@
   <ASE>False</ASE>
   <PHS>False</PHS>
   <Routes>
+    <Route>DEMO</Route>
     <Route selected="true">TNFG</Route>
     <Route>TNFG-OPT</Route>
     <Route>NEW-ROUTE</Route>

@@ -99,7 +99,6 @@ namespace mm
     {
       querytable = new RegionalTable(app);
       executor = new OrderExecutor(app);
-      executor.Route = "DEMO";
     }
 
 
@@ -233,8 +232,9 @@ namespace mm
   
     }
 
-    public void autobid(string symbol)
+    public void autobid(string symbol, string Route)
     {
+      executor.Route = Route;
       this.symbol = symbol;
       this.state = State.Watching;
       string tql = querytable.TqlForBidAskTrade(symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");

@@ -46,23 +46,22 @@ using RealTick.Api.Data;
 
 using mm;
 
-namespace WpfApplication1
+namespace mmgui
 {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window
+  public partial class MMWindow : Window
   {
 
       List<string> recentSymbols = new List<string>();
     OrderManager orderManager = new OrderManager();
     
-    public MainWindow() {
+    public MMWindow() {
       InitializeComponent();
       string appPath = System.IO.Path.GetDirectoryName(
 						       System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
       Rule.Source = new Uri(appPath + @"\Rules.xml");
-      recentSymbols.Add("Hello"); 
       optionSymbolComboBox.DataContext = recentSymbols;
 
     }
@@ -70,6 +69,7 @@ namespace WpfApplication1
 
     private void cancelButton_Click(object sender, RoutedEventArgs e) {
       orderManager.Cancel();
+
     }
 
     private void autobidButton_Click(object sender, RoutedEventArgs e)
@@ -83,14 +83,32 @@ namespace WpfApplication1
       rules.MaxAskPrice = Convert.ToDouble(maxAskPriceTextBox.Text);
       rules.MinCoreExchangeBidSize = Convert.ToInt32(MinCoreExchangeBidSizeTextBox.Text);
       orderManager.rules = rules;
+
       orderManager.WriteLineListeners += Terminal.OnWriteLine;
       Terminal.Clear();
       Terminal.WriteHeader();
-      orderManager.autobid(optionSymbolComboBox.Text);
+      orderManager.autobid(optionSymbolComboBox.Text, routeComboBox.Text);
 
       orderManager.AutobidStatusListeners += UpdateTableStatus;
       recentSymbols.Add(optionSymbolComboBox.Text);
       optionSymbolComboBox.Items.Refresh();
+    }
+
+    private bool columnsHidden = true;
+    private void hideShowColumnsButton_click(object sender, RoutedEventArgs e)
+    {
+        if (columnsHidden)
+        {
+            BestBidColumn.Width = new System.Windows.GridLength(75.0);
+            BestAskColumn.Width = new System.Windows.GridLength(75.0);
+            columnsHidden = false;
+        }
+        else
+        {
+            BestBidColumn.Width = new System.Windows.GridLength(0.0);
+            BestAskColumn.Width = new System.Windows.GridLength(0.0);
+            columnsHidden = true;
+        }
     }
 
     private void saveButton_Click(object sender, RoutedEventArgs e)
@@ -128,4 +146,5 @@ namespace WpfApplication1
     } 
     
   }
+
 }
