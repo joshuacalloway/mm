@@ -93,11 +93,13 @@ namespace mm
     string symbol;
 
     public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
+    public new event EventHandler<DataEventArgs<AutobidStatus>> AutobidStatusListeners;
 
     public OrderManager()
     {
       querytable = new RegionalTable(app);
       executor = new OrderExecutor(app);
+      executor.Route = "DEMO";
     }
 
 
@@ -193,21 +195,25 @@ namespace mm
  
     private void placeCancelOrder()
     {
-
+      AutobidStatus status = new AutobidStatus();
+      status.Symbol = symbol;
+      
       if (WithinRules() && state == State.Watching) {
 	executor.placeOrder(symbol);
-    state = State.OrderPlaced;
+	state = State.OrderPlaced;
       }
-      else if (!WithinRules() && state == State.OrderPlaced)
-	{
-          executor.cancelOrder();
-          state = State.Watching;
-	}
+      else if (!WithinRules() && state == State.OrderPlaced) {
+	executor.cancelOrder();
+	state = State.Watching;
+      }
       StringBuilder line = new StringBuilder();
       line.Append(String.Format("{0,12}|", String.Format("{0:H:mm:ss}", DateTime.Now)));
       line.Append(String.Format("{0,15}|", symbol));
       line.Append(String.Format("{0,8}|", totalBidSize[bestBid]));
       line.Append(String.Format("{0,8}|", totalAskSize[bestAsk]));
+      status.TotalBid = totalBidSize[bestBid].Value;
+      status.TotalAsk = totalAskSize[bestAsk].Value;
+      status.Time = String.Format("{0:H:mm:ss}", DateTime.Now);
       if (market == Market.FIVE_CENT) {
 	line.Append(String.Format("{0,5}|", 0.05));
       }
@@ -219,6 +225,12 @@ namespace mm
       }
       line.Append(state);
       WriteLine(line.ToString());
+
+      status.Status = state.ToString();
+      EventHandler<DataEventArgs<AutobidStatus>> hnd = AutobidStatusListeners;
+      if (hnd != null)
+	hnd(this, new DataEventArgs<AutobidStatus>(status, true));
+  
     }
 
     public void autobid(string symbol)

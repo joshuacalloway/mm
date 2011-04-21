@@ -19,7 +19,9 @@ namespace mm
   {
 
     OrderCache cache;
+    ClientAdapterToolkitApp app;
     public OrderExecutor(ClientAdapterToolkitApp app) {
+        this.app = app;
       cache = new OrderCache(app);
     }
     enum State { ConnectionPending, OrderPending, CancelPending, OrderFinished, ConnectionDead };
@@ -27,6 +29,7 @@ namespace mm
 
     public void cancelOrder()
     {
+        if (ord == null) return;
       DisplayOrder(ord);
       if (state == State.OrderPending && ord.Type == "UserSubmitOrder") {
 	if (ord.CurrentStatus == "LIVE") {
@@ -36,6 +39,7 @@ namespace mm
 	  cache.SubmitCancel(cxl);
 	}
       }
+      cache.Dispose();
     }
 
 
@@ -70,8 +74,13 @@ namespace mm
         System.Threading.AutoResetEvent _stopEvent = new System.Threading.AutoResetEvent(false);
 
     public string Route { get; set; }
+    private string symbol { get; set; }
     State state;
     public void placeOrder(string symbol) {
+      if (this.symbol != symbol) {
+        cancelOrder();
+	cache = new OrderCache(app);
+      }
       OrderBuilder bld = new OrderBuilder(cache);
       state = State.ConnectionPending;
       using (OrderWatcher watch = new OrderWatcher(cache, bld.OrderTag)) {
@@ -104,7 +113,7 @@ namespace mm
 		// An easy way to do this is by making it a good-from order that won't
 		// go live anytime soon:
 		bld.SetGoodFrom(DateTime.Now.AddMinutes(60));
-		cache.SubmitOrder(bld);
+		//cache.SubmitOrder(bld);"
 	      }
 	      break;
 	    case OrderWatcher.Action.Dead:
@@ -155,6 +164,7 @@ namespace mm
 
     protected void DisplayOrder(OrderRecord ord)
     {
+        if (ord == null) return;
       WriteLine("  --> got event {0}", ord.OrderId);
       WriteLine("      ({0}: {1})", ord.Type, ord.CurrentStatus);
       WriteLine("      ({0} {1} {2} at {3})", ord.Buyorsell, ord.Volume, ord.DispName,

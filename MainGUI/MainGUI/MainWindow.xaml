@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
-        Title="Option Market Maker ( version 0.30 - April. 19, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.32 - April. 21, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -12,7 +12,7 @@
       <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
 	<StackPanel Orientation="Horizontal">
 	  <Label Content="Option" Height="25" Width="100" />
-	  <TextBox Height="25" HorizontalAlignment="Left" Text="+NG\21E1\13" Name="optionSymbolTextBox" VerticalAlignment="Top" Width="125" />
+                    <ComboBox IsEditable="True" Height="25" HorizontalAlignment="Left" Text="+NG\21E1\13" Name="optionSymbolComboBox" ItemsSource="{Binding}" VerticalAlignment="Top" Width="125" />
 	  
 	  <Button Content="Autobid" Name="autobidButton" Width="50" Height="25" Click="autobidButton_Click"/>
 	  
@@ -36,8 +36,38 @@
 	  <Label Content="PHS" Height="25" Width="40" />
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="phsCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=PHS}"/>
 	</StackPanel>
-
-	<GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Height="400"  Width="500"
+	<RichTextBox Width="500">
+	  <FlowDocument>
+	    <Table Name="StatusTable" CellSpacing="2" BorderBrush="Black" BorderThickness="1" TextAlignment="Justify">
+	      <Table.Columns>
+		<TableColumn Width="75"/>
+		<TableColumn Width="100"/>
+		<TableColumn Width="75"/>
+		<TableColumn Width="75"/>
+		<TableColumn Width="100"/>
+	      </Table.Columns>
+	      <TableRowGroup>
+		<TableRow>
+		  <TableCell><Paragraph>Time</Paragraph></TableCell>
+		  <TableCell><Paragraph>Symbol</Paragraph></TableCell>
+		  <TableCell><Paragraph>Total Bid</Paragraph></TableCell>
+		  <TableCell><Paragraph>Total Ask</Paragraph></TableCell>
+		  <TableCell><Paragraph>Status</Paragraph></TableCell>
+		</TableRow>
+	      </TableRowGroup>
+	      <TableRowGroup Name="StatusTableData">
+		<TableRow>
+		  <TableCell><Paragraph><TextBlock Name="StatusTable_Time"/></Paragraph></TableCell>
+		  <TableCell><Paragraph><TextBlock Name="StatusTable_Symbol"/></Paragraph></TableCell>
+		  <TableCell><Paragraph><TextBlock Name="StatusTable_TotalBid"/></Paragraph></TableCell>
+		  <TableCell><Paragraph><TextBlock Name="StatusTable_TotalAsk"/></Paragraph></TableCell>
+		  <TableCell><Paragraph><TextBlock Name="StatusTable_Status"/></Paragraph></TableCell>
+		</TableRow>
+	      </TableRowGroup>
+	    </Table>
+	  </FlowDocument>
+	</RichTextBox>
+	<GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Height="300"  Width="500"
 		  Background="LightGray" Name="TerminalContainerGroupBox">
 	  <GroupBox.Header>
 	    Monitor
