@@ -15,21 +15,24 @@ using RealTick.Api.Data;
 namespace mm
 {
 
-  class OrderExecutor
+  class OrderExecutor : CanWait
   {
 
     OrderCache cache;
     ClientAdapterToolkitApp app;
     public OrderExecutor(ClientAdapterToolkitApp app) {
-        this.app = app;
-      cache = new OrderCache(app);
+      this.app = app;
+      //cache = new OrderCache(app);
     }
     enum State { ConnectionPending, OrderPending, CancelPending, OrderFinished, ConnectionDead };
 
 
     public void cancelOrder()
     {
-        if (ord == null) return;
+      if (ord == null) {
+	if (cache != null) cache.Dispose();
+	return;
+      }
       DisplayOrder(ord);
       if (state == State.OrderPending && ord.Type == "UserSubmitOrder") {
 	if (ord.CurrentStatus == "LIVE") {
@@ -42,45 +45,14 @@ namespace mm
       cache.Dispose();
     }
 
-
-        protected bool WaitAny(int millisecondsTimeout, params System.Threading.WaitHandle[] handles)
-        {
-            // We are basically just calling System.Threading.WaitHandle.WaitAny on the handle(s) provided,
-            // but we also include the example's _stopHandle in the list of handles;  this is an event that
-            // gets fired when the user clicks the "Stop" button, allowing us to have a more responsive GUI.
-            // In a command-line version of the same example, you would leave that part out.
-
-            System.Threading.WaitHandle[] ar = new System.Threading.WaitHandle[handles.Length + 1];
-            ar[0] = _stopEvent;
-            for (int i = 0; i < handles.Length; i++)
-                ar[i + 1] = handles[i];
-
-            int n = System.Threading.WaitHandle.WaitAny(ar, millisecondsTimeout);
-            if (n == System.Threading.WaitHandle.WaitTimeout)
-            {
-                WriteLine("TIMED OUT WAITING FOR A RESPONSE");
-                return false;
-            }
-            if (n == 0)
-            {
-                WriteLine("CANCELLED BY USER");
-                return false;
-            }
-            return true;
-        }
-
-        System.Threading.AutoResetEvent _enterEvent = new System.Threading.AutoResetEvent(false);
-        System.Threading.AutoResetEvent _doneEvent = new System.Threading.AutoResetEvent(false);
-        System.Threading.AutoResetEvent _stopEvent = new System.Threading.AutoResetEvent(false);
-
-    public string Route { get; set; }
-    private string symbol { get; set; }
+    public OrderDirections directions { get; set; }
     State state;
-    public void placeOrder(string symbol) {
-      if (this.symbol != symbol) {
-        cancelOrder();
-	cache = new OrderCache(app);
-      }
+ 
+    public void placeOrder(OrderDirections directions) {
+      cancelOrder();
+      cache = new OrderCache(app);
+     
+      this.directions = directions;
       OrderBuilder bld = new OrderBuilder(cache);
       state = State.ConnectionPending;
       using (OrderWatcher watch = new OrderWatcher(cache, bld.OrderTag)) {
@@ -102,10 +74,10 @@ namespace mm
 		bld.SetAccount(null, "TEST", null, null);
 		bld.SetBuySell(OrderBuilder.BuySell.BUY);
 		bld.SetExpiration(OrderBuilder.Expiration.DAY);
-		bld.SetRoute(Route);
-		bld.SetSymbol(symbol, "NYS", OrderBuilder.SecurityType.STOCKOPT);
-		bld.SetVolume(1);
-		bld.SetPriceMarket();
+		bld.SetRoute(directions.Route);
+		bld.SetSymbol(directions.Symbol, "NYS", OrderBuilder.SecurityType.STOCKOPT);
+		bld.SetVolume(directions.Size);
+		bld.SetPriceLimit(directions.LimitPrice);
 		// We set a market price (instead of a limit) to ensure that for
 		// this example we don't get a rejection due to the order being out
 		// of the bid/ask range.  However we are trying to demonstrate an order
@@ -156,7 +128,7 @@ namespace mm
       WriteLine("DONE");
     }
 
-    protected void WriteLine(string fmt, params object[] args)
+    protected override void WriteLine(string fmt, params object[] args)
     {
       string st = String.Format(fmt, args);
       MessageAppEx.LogSev(Severity.Info, st);
@@ -164,7 +136,7 @@ namespace mm
 
     protected void DisplayOrder(OrderRecord ord)
     {
-        if (ord == null) return;
+      if (ord == null) return;
       WriteLine("  --> got event {0}", ord.OrderId);
       WriteLine("      ({0}: {1})", ord.Type, ord.CurrentStatus);
       WriteLine("      ({0} {1} {2} at {3})", ord.Buyorsell, ord.Volume, ord.DispName,

@@ -36,7 +36,6 @@ namespace mm
       public int MaxAskSizeBuyTriggerFiveCent { get; set; }
       public int MaxAskSizeBuyTriggerTenCent { get; set; }
       public double MaxAskPrice { get; set; }
-
       public int MinCoreExchangeBidSize { get; set; }
 
       public string ToString()
@@ -82,6 +81,7 @@ namespace mm
       return Convert.ToDouble(p.ToString());
     }
     public Rules rules { get; set; }
+    public OrderDirections directions { get; set; }
 
     enum Market { FIVE_CENT, TEN_CENT, UNKNOWN }
     Market market;
@@ -90,8 +90,7 @@ namespace mm
     State state = State.Idle;
     ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
     RegionalTable querytable;
-    string symbol;
-
+    
     public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
     public new event EventHandler<DataEventArgs<AutobidStatus>> AutobidStatusListeners;
 
@@ -131,8 +130,8 @@ namespace mm
 
 
     Dictionary<string, RegionalRecord> dataByExchanges = new Dictionary<string, RegionalRecord>();
-    Price? bestBid = Price.Zero;
-    Price? bestAsk = new Price("9999999");
+    Price bestBid = Price.Zero;
+    Price bestAsk = new Price("9999999");
 
     private void calculateTotalBidAskSizes()
     {
@@ -145,18 +144,18 @@ namespace mm
 	{
 	  if (data.RegionalBid != null)
 	    {
-	      if (data.RegionalBid > bestBid)
+	      if (data.RegionalBid.HasValue && data.RegionalBid > bestBid)
 		{
-		  bestBid = data.RegionalBid;
+		  bestBid = data.RegionalBid.Value;
 		}
 	      if (!totalBidSize.ContainsKey(data.RegionalBid)) totalBidSize[data.RegionalBid] = 0;
 	      totalBidSize[data.RegionalBid] += data.RegionalBidsize;
 	    }
 	  if (data.RegionalAsk != null)
 	    {
-	      if (data.RegionalAsk < bestAsk)
+	      if (data.RegionalAsk.HasValue && data.RegionalAsk < bestAsk)
 		{
-		  bestAsk = data.RegionalAsk;
+		  bestAsk = data.RegionalAsk.Value;
 		}
 	      if (!totalAskSize.ContainsKey(data.RegionalAsk)) totalAskSize[data.RegionalAsk] = 0;
 	      totalAskSize[data.RegionalAsk] += data.RegionalAsksize;
@@ -195,10 +194,11 @@ namespace mm
     private void placeCancelOrder()
     {
       AutobidStatus status = new AutobidStatus();
-      status.Symbol = symbol;
+      status.Symbol = directions.Symbol;
       
       if (WithinRules() && state == State.Watching) {
-	executor.placeOrder(symbol);
+          directions.LimitPrice = bestBid;
+	executor.placeOrder(directions);
 	state = State.OrderPlaced;
       }
       else if (!WithinRules() && state == State.OrderPlaced) {
@@ -207,7 +207,7 @@ namespace mm
       }
       StringBuilder line = new StringBuilder();
       line.Append(String.Format("{0,12}|", String.Format("{0:H:mm:ss}", DateTime.Now)));
-      line.Append(String.Format("{0,15}|", symbol));
+      line.Append(String.Format("{0,15}|", directions.Symbol));
       line.Append(String.Format("{0,8}|", totalBidSize[bestBid]));
       line.Append(String.Format("{0,8}|", totalAskSize[bestAsk]));
       status.TotalBid = totalBidSize[bestBid].Value;
@@ -232,12 +232,11 @@ namespace mm
   
     }
 
-    public void autobid(string symbol, string Route)
+    public void autobid(OrderDirections directions)
     {
-      executor.Route = Route;
-      this.symbol = symbol;
+      this.directions = directions;
       this.state = State.Watching;
-      string tql = querytable.TqlForBidAskTrade(symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");
+      string tql = querytable.TqlForBidAskTrade(directions.Symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");
 
       querytable.WantData(tql, true, true);
       querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(querytable_OnData);

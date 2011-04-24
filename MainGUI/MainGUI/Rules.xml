@@ -2,15 +2,15 @@
   <MinSize>100</MinSize>
   <MaxSize>300</MaxSize>
   <Size>1</Size>
-  <CBOE>YES</CBOE>
+  <BOX>False</BOX>
+  <CBOE>False</CBOE>
   <ISE>True</ISE>
   <ASE>False</ASE>
   <PHS>False</PHS>
   <Routes>
-    <Route>DEMO</Route>
-    <Route selected="true">TNFG</Route>
+    <Route>TNFG</Route>
     <Route>TNFG-OPT</Route>
-    <Route>NEW-ROUTE</Route>
+    <Route>DEMO</Route>
   </Routes>
   <MaxAskPrice>1.00</MaxAskPrice>
   <MinBidAskWidth>0.05</MinBidAskWidth>

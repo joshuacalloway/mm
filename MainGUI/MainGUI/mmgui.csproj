@@ -64,6 +64,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AutobidStatus.cs" />
+    <Compile Include="CanWait.cs" />
+    <Compile Include="OrderDirections.cs" />
     <Compile Include="OrderExecutor.cs" />
     <Compile Include="StringEvent.cs" />
     <Compile Include="OrderManager.cs" />
