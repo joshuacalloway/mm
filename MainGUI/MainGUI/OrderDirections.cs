@@ -4,6 +4,7 @@ using RealTick.Api.Data;
 namespace mm {
 
   public class OrderDirections {
+    public bool Simulated { get; set; }
     public Price LimitPrice { get; set; }
     public string Symbol { get; set; }
     public string Route { get; set; }

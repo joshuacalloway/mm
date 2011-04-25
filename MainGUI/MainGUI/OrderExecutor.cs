@@ -85,7 +85,12 @@ namespace mm
 		// An easy way to do this is by making it a good-from order that won't
 		// go live anytime soon:
 		bld.SetGoodFrom(DateTime.Now.AddMinutes(60));
-		//cache.SubmitOrder(bld);"
+		if (directions.Simulated) {
+		  WriteLine("Am sending simulated order");
+		}
+		else {
+		  cache.SubmitOrder(bld);
+		}
 	      }
 	      break;
 	    case OrderWatcher.Action.Dead:

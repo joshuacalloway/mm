@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
 	xmlns:mmgui="clr-namespace:mmgui"
-        Title="Option Market Maker ( version 0.34 - April. 24, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.35 - April. 24, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -20,8 +20,14 @@
 	  <Button Content="Cancel" Name="cancelButton" Width="50" Height="25" Click="cancelButton_Click"/>
 	</StackPanel>
 	<StackPanel Height="30" Orientation="Horizontal">
-	  <Label Content="Size" Height="25" Width="100" HorizontalAlignment="Left" />
-	  <TextBox Height="25" HorizontalAlignment="Left" Text="{Binding XPath=Size}" Name="sizeTextBox" VerticalAlignment="Top" Width="100" />
+	  <StackPanel Height="30" Orientation="Horizontal">
+	    <Label Content="Size" Height="25" Width="100" HorizontalAlignment="Left" />
+	    <TextBox Height="25" HorizontalAlignment="Left" Text="{Binding XPath=Size}" Name="sizeTextBox" VerticalAlignment="Top" Width="100" />
+	  </StackPanel>
+	  <StackPanel Orientation="Horizontal">
+	    <Label Content="Route" Height="30" Width="100" HorizontalAlignment="Left" />
+	    <ComboBox Height="30" IsEditable="True" Name="routeComboBox" DataContext="{Binding}" ItemsSource="{Binding XPath=Routes/Route}" IsSynchronizedWithCurrentItem="True" Width="125" />
+	  </StackPanel>
 	</StackPanel>
 	<StackPanel Height="30" Orientation="Horizontal">
 	  <!-- Exchanges -->
@@ -38,40 +44,43 @@
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="phsCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=PHS}"/>
 	</StackPanel>
 	<StackPanel Orientation="Horizontal">
-	  <RichTextBox Width="600">
+	  <Label Name="SimulatedStatusLabel" Content="" Height="30" Width="100" HorizontalAlignment="Left" />
+	</StackPanel>
+	<StackPanel Orientation="Horizontal">
+	  <RichTextBox Width="700">
 	    <FlowDocument>
 	      <Table Name="StatusTable" CellSpacing="2" BorderBrush="Black" BorderThickness="1" TextAlignment="Justify">
 		<Table.Columns>
-		  <TableColumn Width="75" Name="TimeColumn"/>
+		  <TableColumn Width="100" Name="TimeColumn"/>
 		  <TableColumn Width="100" Name="SymbolColumn"/>
-		  <TableColumn Width="75" Name="TotalBidColumn"/>
-		  <TableColumn Width="75" Name="TotalAskColumn"/>
+		  <TableColumn Width="100" Name="TotalBidColumn"/>
+		  <TableColumn Width="100" Name="TotalAskColumn"/>
 		  <TableColumn Width="100" Name="StatusColumn"/>
 		  <TableColumn Width="0" Name="BestBidColumn"/>
 		  <TableColumn Width="0" Name="BestAskColumn"/>                          
 		</Table.Columns>
 		<TableRowGroup>
-		  <TableRow>
+		  <TableRow Background="Navy">
 		    <TableCell>
-		      <Paragraph>Time</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Time</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Symbol</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Symbol</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Total Bid</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Total Bid</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Total Ask</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Total Ask</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Status</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Status</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Best Bid</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Best Bid</Paragraph>
 		    </TableCell>
 		    <TableCell>
-		      <Paragraph>Best Ask</Paragraph>
+		      <Paragraph FontSize="14" FontWeight="Bold" Foreground="White">Best Ask</Paragraph>
 		    </TableCell>
 		  </TableRow>
 		</TableRowGroup>
@@ -94,7 +103,7 @@
 
 
 	</StackPanel>
-	<GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Height="250"  Width="500"
+	<GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Height="200"  Width="500"
 		  Background="LightGray" Name="TerminalContainerGroupBox">
 	  <GroupBox.Header>
 	    Monitor
@@ -120,10 +129,6 @@
 	</Grid.RowDefinitions>
 	
 	<StackPanel Height="Auto" Orientation="Vertical" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
-	  <StackPanel Orientation="Horizontal">
-	    <Label Content="Route" Height="30" Width="400" HorizontalAlignment="Left" />
-	    <ComboBox Height="30" IsEditable="True" Name="routeComboBox" DataContext="{Binding}" ItemsSource="{Binding XPath=Routes/Route}" IsSynchronizedWithCurrentItem="True" Width="125" />
-	  </StackPanel>
 	  <StackPanel Orientation="Horizontal">
 	    <Label Content="Maximum Ask Price" Height="30" Width="400" HorizontalAlignment="Left" />
 	    <TextBox Height="25" HorizontalAlignment="Left" Text="{Binding XPath=MaxAskPrice}" Name="maxAskPriceTextBox" VerticalAlignment="Top" Width="100" />

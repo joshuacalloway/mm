@@ -34,15 +34,16 @@ namespace mmgui
   public partial class MMWindow : Window
   {
 
-    List<string> recentSymbols = new List<string>();
+    HashSet<string> recentSymbols = new HashSet<string>();
     OrderManager orderManager = new OrderManager();
-    
+    public bool Simulated { get; set; }
     public MMWindow() {
       InitializeComponent();
       string appPath = System.IO.Path.GetDirectoryName(
 						       System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
       Rule.Source = new Uri(appPath + @"\Rules.xml");
       optionSymbolComboBox.DataContext = recentSymbols;
+
     }
 
 
@@ -66,6 +67,16 @@ namespace mmgui
       Terminal.Clear();
       Terminal.WriteHeader();
       OrderDirections directions = new OrderDirections();
+      XmlDataProvider xml = (XmlDataProvider)FindName("Rule");
+      Simulated = Convert.ToBoolean(xml.Document.SelectSingleNode("Rule/Simulated").InnerText);
+      if (Simulated) {
+	SimulatedStatusLabel.Content = "Simulated Trades";
+      }
+      else {
+	SimulatedStatusLabel.Content = "Live Trades";
+      }
+
+      directions.Simulated = Simulated;
       directions.Symbol = optionSymbolComboBox.Text;
       directions.Route = routeComboBox.Text;
       directions.Size = Convert.ToInt32( sizeTextBox.Text );
