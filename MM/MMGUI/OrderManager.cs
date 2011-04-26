@@ -64,32 +64,29 @@ namespace mm
     public bool WithinRules()
     {
       bool withinRules = true;
-      if (market == Market.FIVE_CENT)
-	{
-	  withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
-	  MessageAppEx.LogSev(Severity.Trace, "(totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
-	  withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
-
-	  MessageAppEx.LogSev(Severity.Trace, "(totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
-
-
-	}
-      if (market == Market.TEN_CENT)
-	{
-	  withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
-	  withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
-
-	}
-      else
-	{
-	  withinRules = false;
-	}
-      MessageAppEx.LogSev(Severity.Trace, "toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
+      if (market == Market.FIVE_CENT) {
+	withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
+	WriteLog("FIVE_CENT (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
+	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
+	
+	WriteLog("FIVE_CENT (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
+      }
+      if (market == Market.TEN_CENT) {
+	WriteLog("TEN_CENT, (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent));
+	withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
+	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
+	WriteLog("TEN_CENT, (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01));
+      }
+      else {
+	withinRules = false;
+      }
+      WriteLog("toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
       withinRules = withinRules && toDouble(bestAsk) < rules.MaxAskPrice;
-      MessageAppEx.LogSev(Severity.Trace, "(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
+      WriteLog("(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
       withinRules = withinRules || (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize);
       return withinRules;
     }
+
     private double toDouble(Price? p)
     {
       return Convert.ToDouble(p.ToString());
@@ -110,6 +107,18 @@ namespace mm
 	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st), true));
     }
 
+
+    protected void WriteLog(string msg) {
+        MessageAppEx.LogSev(Severity.Info, "{0}", msg);
+   
+       
+    }
+    protected void WriteLog(string fmt, params object[] args) {
+      string st = String.Format(fmt, args);
+      WriteLog(st);
+
+    }
+
     protected void WriteLine(string fmt, params object[] args)
     {
       fmt += "\n";
@@ -119,6 +128,7 @@ namespace mm
     void OnConnectionDead(object sender, EventArgs e)
     {
       WriteLine("CONNECTION FAILED.");
+      WriteLog("CONNECTION FAILED.");
     }
 
     class OfferSize : Dictionary<Price?, int?> {}
@@ -138,35 +148,40 @@ namespace mm
       bestBid = Price.Zero;
       bestAsk = new Price("9999999");
 
-      foreach (var data in dataByExchanges.Values)
-	{
-	  if (data.RegionalBid != null)
-	    {
-	      if (data.RegionalBid.HasValue && data.RegionalBid > bestBid)
-		{
-		  bestBid = data.RegionalBid.Value;
-		}
-	      if (!totalBidSize.ContainsKey(data.RegionalBid)) totalBidSize[data.RegionalBid] = 0;
-	      totalBidSize[data.RegionalBid] += data.RegionalBidsize;
-	    }
-	  if (data.RegionalAsk != null)
-	    {
-	      if (data.RegionalAsk.HasValue && data.RegionalAsk < bestAsk)
-		{
-		  bestAsk = data.RegionalAsk.Value;
-		}
-	      if (!totalAskSize.ContainsKey(data.RegionalAsk)) totalAskSize[data.RegionalAsk] = 0;
-	      totalAskSize[data.RegionalAsk] += data.RegionalAsksize;
-	    }
+      foreach (var data in dataByExchanges.Values) {
+	if (data.RegionalBid != null) {
+	  if (data.RegionalBid.HasValue && data.RegionalBid > bestBid) {
+	    bestBid = data.RegionalBid.Value;
+	  }
+	  if (!totalBidSize.ContainsKey(data.RegionalBid)) totalBidSize[data.RegionalBid] = 0;
+	  totalBidSize[data.RegionalBid] += data.RegionalBidsize;
 	}
+	if (data.RegionalAsk != null)
+	  {
+	    if (data.RegionalAsk.HasValue && data.RegionalAsk < bestAsk)
+	      {
+		bestAsk = data.RegionalAsk.Value;
+	      }
+	    if (!totalAskSize.ContainsKey(data.RegionalAsk)) totalAskSize[data.RegionalAsk] = 0;
+	    totalAskSize[data.RegionalAsk] += data.RegionalAsksize;
+	  }
+      }
+
+      market = getMarketFromSpread(bestAsk, bestBid);
+      WriteLog("Market for bestAsk {0}, bestBid {1} is {2} : ",  bestAsk, bestBid, market);
+    }
+    
+    private Market getMarketFromSpread(Price? bestAsk, Price? bestBid) {
       var spread = bestAsk - bestBid;
-      Price? fiveCent = new Price(5, Basecode.Cents);
-      Price? tenCent = new Price(10, Basecode.Cents);
-      if (spread == fiveCent)
+      Market market;
+      Price fiveCent = new Price(5, Basecode.Cents);
+      Price tenCent = new Price(10, Basecode.Cents);
+      if (!spread.HasValue) return market = Market.UNKNOWN;
+      if (spread.Value == fiveCent)
 	{
 	  market = Market.FIVE_CENT;
 	}
-      else if (spread == tenCent)
+      else if (spread.Value == tenCent)
 	{
 	  market = Market.TEN_CENT;
 	}
@@ -174,16 +189,15 @@ namespace mm
 	{
 	  market = Market.UNKNOWN;
 	}
+      return market;
     }
 
     void OnData(object sender, DataEventArgs<RegionalRecord> args)
     {
-      foreach (RegionalRecord data in args)
-	{
-	  var bld = new StringBuilder();
-	  dataByExchanges[data.RegionalExchid] = data;
-	}
-
+      foreach (RegionalRecord data in args) {
+	var bld = new StringBuilder();
+	dataByExchanges[data.RegionalExchid] = data;
+      }
       calculateTotalBidAskSizes();
       placeCancelOrder();
     }
@@ -195,10 +209,12 @@ namespace mm
       
       if (WithinRules() && state == State.Watching) {
           directions.LimitPrice = bestBid;
+	  WriteLog("Within rules.. am placing Order");
 	executor.placeOrder(directions);
 	state = State.OrderPlaced;
       }
       else if (!WithinRules() && state == State.OrderPlaced) {
+	WriteLog("NOT Within rules.. cancelling any live orders. still watching."); 
 	executor.cancelOrder();
 	state = State.Watching;
       }
@@ -233,6 +249,7 @@ namespace mm
 
     public void autobid(OrderDirections directions)
     {
+      WriteLog("autobid on directions {0} " + directions.ToString());
       this.directions = directions;
       this.state = State.Watching;
       string tql = querytable.TqlForBidAskTrade(directions.Symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");
@@ -241,12 +258,14 @@ namespace mm
       querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(OnData);
       querytable.OnDead += new EventHandler<EventArgs>(OnConnectionDead);
       if (!querytable.Connected) {
-	querytable.Start();  // 1 minutes
+	WriteLog("!querytable.Connected, querytable.Start()");
+	querytable.Start(); 
       }
     }
 
     public void Cancel()
     {
+      WriteLog("Cancel()");
       querytable.Stop();
       this.state = State.Idle;
     }
