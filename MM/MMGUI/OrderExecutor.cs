@@ -122,6 +122,7 @@ namespace mm
     {
       string st = String.Format(fmt, args);
       MessageAppEx.LogSev(Severity.Info, st);
+        
     }
 
     protected void DisplayOrder(OrderRecord ord)
