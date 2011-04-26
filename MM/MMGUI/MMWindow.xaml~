@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
 	xmlns:mmgui="clr-namespace:mmgui"
-        Title="Option Market Maker ( version 0.35 - April. 24, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.35.5 - April. 26, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -100,19 +100,19 @@
 	    
 	  </RichTextBox>
 	  <Button Content="+/-" Grid.Row="3" IsEnabled="True" Grid.ColumnSpan="2" Height="30" HorizontalAlignment="Left" Name="hideShowColumns" VerticalAlignment="Top" Width="30" Click="hideShowColumnsButton_click"/>
-
-
+	  
 	</StackPanel>
-	<GroupBox Margin="10,10,10,10" FontSize="12" FontWeight="Bold" Height="200"  Width="500"
+	<GroupBox BorderThickness="5" BorderBrush="Azure" FontSize="12" FontWeight="Bold" Height="200"  Width="714"
 		  Background="LightGray" Name="TerminalContainerGroupBox">
 	  <GroupBox.Header>
-	    Monitor
+	  Monitor
 	  </GroupBox.Header>
 	  <mmgui:Terminal FontFamily="Courier New" Height="400" Visibility="Visible" Background="Black" Foreground="Green" x:Name="Terminal"></mmgui:Terminal>
 	</GroupBox>
-	
       </StackPanel>
+      
     </DockPanel>
+   
     <DockPanel LastChildFill="True" DockPanel.Dock="Right">
       <Grid DockPanel.Dock="Top" Height="Auto" Width="Auto" Name="EditRulesGrid" Background="#0F000CC0" >
 

@@ -29,6 +29,20 @@ namespace mm
 {
   class OrderManager
   {
+    public Rules rules { get; set; }
+    public OrderDirections directions { get; set; }
+    OrderExecutor executor;
+ 
+    enum Market { FIVE_CENT, TEN_CENT, UNKNOWN }
+    Market market;
+    enum State { Idle, Watching, OrderPlaced };
+    State state = State.Idle;
+    ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
+    RegionalTable querytable;
+    public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
+    public new event EventHandler<DataEventArgs<AutobidStatus>> AutobidStatusListeners;
+
+
     public class Rules
     {
       public int MinTotalBidSizeTenCent { get; set; }
@@ -80,20 +94,7 @@ namespace mm
     {
       return Convert.ToDouble(p.ToString());
     }
-    public Rules rules { get; set; }
-    public OrderDirections directions { get; set; }
-
-    enum Market { FIVE_CENT, TEN_CENT, UNKNOWN }
-    Market market;
-
-    enum State { Idle, Watching, OrderPlaced };
-    State state = State.Idle;
-    ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
-    RegionalTable querytable;
     
-    public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
-    public new event EventHandler<DataEventArgs<AutobidStatus>> AutobidStatusListeners;
-
     public OrderManager()
     {
       querytable = new RegionalTable(app);
@@ -115,15 +116,12 @@ namespace mm
       Write(fmt, args);
     }
 
-    void querytable_OnDead(object sender, EventArgs e)
+    void OnConnectionDead(object sender, EventArgs e)
     {
       WriteLine("CONNECTION FAILED.");
     }
 
-    class OfferSize : Dictionary<Price?, int?>
-    {
-
-    }
+    class OfferSize : Dictionary<Price?, int?> {}
 
     OfferSize totalBidSize = new OfferSize();
     OfferSize totalAskSize = new OfferSize();
@@ -178,7 +176,7 @@ namespace mm
 	}
     }
 
-    void querytable_OnData(object sender, DataEventArgs<RegionalRecord> args)
+    void OnData(object sender, DataEventArgs<RegionalRecord> args)
     {
       foreach (RegionalRecord data in args)
 	{
@@ -189,7 +187,6 @@ namespace mm
       calculateTotalBidAskSizes();
       placeCancelOrder();
     }
-    OrderExecutor executor;
  
     private void placeCancelOrder()
     {
@@ -212,6 +209,8 @@ namespace mm
       line.Append(String.Format("{0,8}|", totalAskSize[bestAsk]));
       status.TotalBid = totalBidSize[bestBid].Value;
       status.TotalAsk = totalAskSize[bestAsk].Value;
+      status.BestBid = bestBid;
+      status.BestAsk = bestAsk;
       status.Time = String.Format("{0:H:mm:ss}", DateTime.Now);
       if (market == Market.FIVE_CENT) {
 	line.Append(String.Format("{0,5}|", 0.05));
@@ -239,8 +238,8 @@ namespace mm
       string tql = querytable.TqlForBidAskTrade(directions.Symbol, null, "A", "B", "C", "D", "E", "I", "J", "K", "M", "N", "P", "Q", "W", "X", "Y");
 
       querytable.WantData(tql, true, true);
-      querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(querytable_OnData);
-      querytable.OnDead += new EventHandler<EventArgs>(querytable_OnDead);
+      querytable.OnRegional += new EventHandler<DataEventArgs<RegionalRecord>>(OnData);
+      querytable.OnDead += new EventHandler<EventArgs>(OnConnectionDead);
       if (!querytable.Connected) {
 	querytable.Start();  // 1 minutes
       }

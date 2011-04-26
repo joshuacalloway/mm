@@ -1,0 +1,23 @@
+<Rule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <MinSize>100</MinSize>
+  <MaxSize>300</MaxSize>
+  <Size>1</Size>
+  <CBOE>YES</CBOE>
+  <ISE>True</ISE>
+  <ASE>False</ASE>
+  <PHS>False</PHS>
+  <Routes>
+    <Route selected="true">TNFG</Route>
+    <Route>TNFG-OPT</Route>
+    <Route>NEW-ROUTE</Route>
+  </Routes>
+  <MaxAskPrice>1.00</MaxAskPrice>
+  <MinBidAskWidth>0.05</MinBidAskWidth>
+  <MaxAskSizeBuyTriggerFiveCent>13</MaxAskSizeBuyTriggerFiveCent>
+  <ExtraDegradeCancelFiveCent>5</ExtraDegradeCancelFiveCent>
+  <MaxAskSizeBuyTriggerTenCent>800</MaxAskSizeBuyTriggerTenCent>
+  <MaxMidPtAskSizeCancelTenCent>600</MaxMidPtAskSizeCancelTenCent>
+  <MinTotalBidSizeFiveCent>2000</MinTotalBidSizeFiveCent>
+  <MinTotalBidSizeTenCent>1500</MinTotalBidSizeTenCent>
+  <MinCoreExchangeBidSize>3000</MinCoreExchangeBidSize>
+</Rule>

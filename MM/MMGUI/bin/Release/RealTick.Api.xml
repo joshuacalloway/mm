@@ -1,0 +1,3699 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RealTick.Api</name>
+    </assembly>
+    <members>
+        <member name="T:RealTick.Api.Data.FieldInformation">
+            <summary>
+            The FieldInformation class is used to retreive information about
+            a particular field.  The information is retreived from the parm\\fiddef.lst
+            file from the TAL directory.  Clients can generate custom fields not
+            listed in the fiddef.list file.  If a field number with no fiddef.list entry or
+            custom field is referenced, a blank entry will be created.
+            		   
+            The FieldInformation constructor is private, and FieldInfo instanceses
+            are retreived by the GetFieldInformation static methods.  These methods
+            ensure there is only one instance of a FieldInformation class for a
+            particular field.  So two fields are the same if and only if their
+            Associated FieldInformation objects have the same reference value.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.ClearFieldInformation">
+            <summary>
+            This is just for unit testing, to let us clear the field map and emulate the case of a totally
+            unknown fid being processed for the first time.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.GetFieldInformation(System.String)">
+            <summary>
+            Retrieves a FieldInfo instance for a particular field.  If the instance has not
+            yet been constructed, it will be constructed.  If the instance has already
+            been constructed, the already constructed instance will be returned.
+            		   
+            This overload returns nullptr if the field cannot be found in the fiddef.lst, or
+            hasn't already been created as a custom field.
+            </summary>
+            <param name="fieldName">The name of the field</param>
+            <returns>A FieldInformation instance cooresponding to the provided field name is returned.
+            If the field name cannot be found, a nullptr reference is returned.
+            </returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.GetFieldInformation(System.String,System.Boolean)">
+            <summary>
+            Retreives a FieldInfo instance for a particular field.  If the instance has not
+            yet been constructed, it will be constructed.  If the instance has already
+            been constructed, the already constructed instance will be returned.
+            	   
+            This overload has an option of creating a custom field on the fly if the
+            Indicated field cannot be found.
+            </summary>
+            <param name="fieldName">The name of the field</param>
+            <param name="createTempField">Whether or not to create a custom field if the field name isn't found</param>
+            <returns>A FieldInformation instance cooresponding to the provided field name is returned.
+            If the field name cannot be found, and createCustomField is false, a nullptr
+            reference is returned.
+            </returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.GetFieldInformation(System.Int32)">
+            <summary>
+            Retreives a FieldInfo instance for a particular field.  If the instance has not
+            yet been constructed, it will be constructed.  If the instance has already
+            been constructed, the already constructed instance will be returned.
+            				   
+            This overload returns nullptr if the field cannot be found in the fiddef.lst, or
+            hasn't already been created as a custom field.
+            </summary>
+            <param name="fieldID">The id number of the field</param>
+            <returns>
+            A FieldInformation instance cooresponding to the provided field id is returned.
+            If the field id cannot be found, a nullptr reference is returned.
+            </returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.GetFieldInformation(System.Int32,System.Boolean)">
+            <summary>
+            Retreives a FieldInfo instance for a particular field.  If the instance has not
+            yet been constructed, it will be constructed.  If the instance has already
+            been constructed, the already constructed instance will be returned.
+            	   
+            This overload has an option of creating a custom field on the fly if the
+            Indicated field cannot be found.
+            </summary>
+            <param name="fieldID">The id number of the field</param>
+            <param name="createUnlistedField">Whether or not create a custom field if the field id cannot be found.</param>
+            <returns>
+            A FieldInformation instance cooresponding to the provided field id is returned.
+            If the field id cannot be found, and createUnlistedField is false, a nullptr
+            reference is returned.
+            </returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.GetHashCode">
+            <summary>
+            Returns a hash code for this field.  Can be used to use a field as in index in a hashtable
+            </summary>
+            <returns>
+            The hash code returned is the hash code for the field number
+            </returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.ToString">
+            <summary>
+            String that contains the number,name,description and type of this field
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.FieldInformation.ForceType(RealTick.Api.Data.FieldType,System.Boolean)">
+            <summary>
+            When creating an unlisted FID, this function can be used to set the field type.
+            </summary>
+            <param name="t">FieldType for the field</param>
+            <param name="bShort">If an Int field, whether it's a SHORT; otherwise not used</param>
+        </member>
+        <member name="P:RealTick.Api.Data.FieldInformation.ID">
+            <summary>
+            the field ID number
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.FieldInformation.Name">
+            <summary>
+            the field Name
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.FieldInformation.Description">
+            <summary>
+            the field description
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.FieldInformation.Type">
+            <summary>
+            the field type
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.TalipcConnection">
+            <summary>
+            The TalipcConnection class is a subclass of the Connection class
+            which represents a connection to a TAL server via the TALIPC protocol
+            The TallipcConnection behaves the same as other Connection subclasses.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.Connection">
+            <summary>
+            The Connection class is an abstract base class for the classes which
+            represent a connection to a server.  A Connection represents a connection
+            to a machine,service,topic triplet.  A Connection can have many conversations
+            (the toolkit class Query represents a conversation), associated, but it will
+            always have at least one conversation as long as it remains connected to the
+            server.  Different protocols will provide their own implementation of Connection. 
+            Connection objects are not constructed directly, but are usally returned from the
+            GetConnection method of the application class.  Although clients can also create
+            them using the GetConnection method of the appropiate Protocol implementation.
+            When the client is finished with the Connection, it should be destroyed with the
+            Dispose() method of the IDisposable interface. This will disconnect it from the server.
+            Also, when the application terminates, the connection will automatically be severed.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Connection.AttachQuery(RealTick.Api.Communication.Query)">
+            <summary>
+            Attaches a Query object to the connection, and creates a new conversation 
+            to service the query.
+            </summary>
+            <param name="query">The Query object which is to be attached to the Connection object.</param>
+            <returns>Returns true if the query was successfully attached, otherwise false.</returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Connection.Finalize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Connection.Dispose">
+            <summary>
+            Disposes the object.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Connection.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.Connection.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.Connected">
+            <summary>
+            Returns true if the Connection object is currently connected to the server.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.Machine">
+            <summary>
+            Returns the name of the machine the Connection object is connected to.  If the 
+            connection was opened using an alias, this will return the name of the 
+            machine the alias resolved to.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.Service">
+            <summary>
+            Returns the name of the service the Connection object is connected to.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.Topic">
+            <summary>
+            Returns the name of the topic the Connection object is connected to.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.AttachedQueries">
+            <summary>
+            Returns a collection of all the attached queries to this connection.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.Connection.OnTerminate">
+            <summary>
+            This event is fired when the socket is closed, not through calling Connection.Dispose
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Connection.Disposed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.Connection.Conversation">
+            <summary>
+            In the current implementation, instances of this class are required to be passed around some places
+            (for backward compatibility) but the objects are inert and not currently used to contain logic or state.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcConnection.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcConnection.Connected">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcConnection.Machine">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcConnection.Service">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcConnection.Topic">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.ClientAdapter.ClientAdapterProtocol">
+            <summary>
+            The ClientAdapterProtocol class is a subclass of Protocol, and it
+            implements the infrastructure of the client adapter protocol.
+            An application that uses the client adapter protocol should
+            Create an instance of ClientAdapterProtocol in its constructor,
+            and call the Initialize() method.  It should also call the CleanUp()
+            method in the finalizer.  A client can subclass ClientAdapterToolkitApp
+            which already does this. The ClientAdapterProtocol requires the
+            DOTNETTOOLKIT/CA=YES permit in order to instantiate.
+            The ClientAdapterProtocol supports the use of class aliases,
+            so it is not necessary to supply the address of an actual machine
+            when creating a connection, instead one only has to supply the
+            name of the desired server class bracketed by $s, e.g. \"$QUOTES$\". 
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.Protocol">
+            <summary>
+            The Protocol class is subclassed to implement a network protocol for the
+            toolkit to communicate with the toolkit.  Right now there are two Protocol
+            subclasses, TalipcProtocol and ClientAdapterProtocol.  The client uses the
+            protocol object to create Connection objects to talk to the server.  This
+            is usally done through the application object, via the ToolkitApp.GetConnection()
+            method.  The application class should make sure that the Initialize() and Cleanip()
+            methods for the Protocol object are called.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Protocol.Initialize">
+            <summary>
+            This virtual method is called when the application starts up to initialize
+            the Protocol object.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Protocol.Cleanup">
+            <summary>
+            This virtual method is called when the application is shutting down,
+            to call any clean-up code assoicated with the Protocol object.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Protocol.CreateConnection(System.String,System.String,System.String)">
+            <summary>
+            This virtual method is called by the application class or the client
+            to create a Connection object
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.#ctor(RealTick.Api.ClientAdapter.ClientAdapterToolkitApp)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.Initialize">
+            <summary>
+            Initializes the ClientAdapter library.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.Cleanup">
+            <summary>
+            Closes the ClientAdapter library.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.Cleanup(System.Boolean)">
+            <summary>
+            Closes the ClientAdapter library.
+            <param name="force"></param>
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.CreateConnection(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.CreateConnectionWithMode(System.String,System.String,System.String,RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="mode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterProtocol.CreateConnectionForUser(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="user"></param>
+            <param name="domain"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterProtocol.Tracer">
+            <summary>
+            Returns currently attached protocol tracer.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.InitAckMessage">
+            <summary>
+            Sent when a InitAck callback is received
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.TalipcMessage">
+            <summary>
+            Base class for messages passed from TalipcConnection to queries.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.TalipcMessage.GetMsgType">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RealTick.Api.Communication.TalipcMessage.MessageType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.InitAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.OtherAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.ExecuteAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.Terminate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TalipcMessage.MessageType.Execute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.InitAckMessage.#ctor(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="bResult"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.InitAckMessage.GetMsgType">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.InitAckMessage.Result">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.AckEventArgs">
+            <summary>
+            The AckEventArgs class provides data to an Ack event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.AckEventArgs.#ctor(System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="status"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.AckEventArgs.Item">
+            <summary>
+            Returns the item, (usually a TQL query), that the ACK is associated with.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.AckEventArgs.Status">
+            <summary>
+            Returns the status code associated with the ACK.  The meaning of the code 
+            depends on the server, and the type of ACK.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.TalipcToolkitApp">
+            <summary>
+            The TalipcToolkitApp class is a subclass of the ToolkitApp class.
+            It uses the TalipcProtocol as the native protocol.  While
+            the client should subclass its own application class
+            it can use the TalipcToolkitApp class if it only needs
+            to use the TALIPC protocol, and doesn't need any config fields.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.ToolkitApp">
+            <summary>
+            The ToolkitApp class is an abstract class which controls the infrastructure
+            of a toolkit application.  When writing a toolkit application, the client
+            should subclass ToolkitApp, or a class derrived from it, (TalipcToolkitApp or
+            ClientAdapterToolkitApp.)  If the application is simple the client can
+            just use the TalipcToolkitApp or ClientAdapterToolkitApp as is.  The application
+            class handles the configuration, logging, and connection creating for the app.
+            The title for the application, which is used when logging messages, reading
+            the config from tal.ini, and is reported to talipc, is determined by the
+            AssemblyTitleAttribute attribute for the executing assembly, it should be
+            set for all toolkit applications.  Class derrived from ToolkitApp cannot
+            be constructed unless the machine has the proper toolkit permissions,
+            if it does not, the constructor will throw an exception.  Only one instance
+            of a class derrived from ToolkitApp cab be constructed, attempting to
+            construct a second will throw an exception.  Cleanup code should be placed in the
+            application class finalizer, the toolkit will ensure that it is run when the
+            process exits.
+            The main assembly of the application which uses the toolkit must be indicated when
+            constructing the ToolkitApp object.  If you are using an .exe which is the main assembly
+            use the default constructor.  Otherwise use supply the main assembly as the parameter to the
+            constructor.  The main assembly must have the AssemblyTitle attribute defined.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.#ctor">
+            <summary>
+            Use this constructor when your main assembly is an exe.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.#ctor(System.Reflection.Assembly)">
+            <summary>
+            Use this constructor when your main assembly is a dll loaded by another app.
+            </summary>
+            <param name="mainAssembly">The \"main\" assembly of the application.</param>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.Dispose">
+            <summary>
+            Close the TAL libraries and clean up resources.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.Finalize">
+            <summary>
+            Unlike other finalizers, the toolkit will make sure that the finalizer for ToolkitApp is called when the process exits.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.GetConfigSection(System.String)">
+            <summary>
+            Returns a ConfigSection object for a particular tal.ini section.
+            </summary>
+            <param name="sectionName">The name of the tal.ini section to retrieve.</param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.LogMessage(RealTick.Api.Application.Severity,System.String)">
+            <summary>
+            Sends the value of a string to the message app.
+            </summary>
+            <param name="sev">The severity of the message to send.</param>
+            <param name="message">A string containing the text of the message.</param>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.LogMessage(RealTick.Api.Application.Severity,System.String,System.Object[])">
+            <summary>
+            Formats a string, and sends its value to the message app.  Uses the same
+            syntax and format strings as functions like Console.WriteLine().
+            </summary>
+            <param name="sev">The severity of the message to send.</param>
+            <param name="message">The format string for the message to send</param>
+            <param name="arParam">A varargs style list of objects to use with the format string to generate the message</param>
+        </member>
+        <member name="M:RealTick.Api.Application.ToolkitApp.GetConnection(System.String,System.String,System.String)">
+            <summary>
+            Gets a connection to a server.  What protocol is used depends on the implementation of the 
+            derived class.
+            </summary>
+            <param name="machine">The name of the machine to connect to, or a talipc alias</param>
+            <param name="service">The name of the service on the remote machine</param>
+            <param name="topic">The name of the topic to connect to</param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Application.ToolkitApp.TheApp">
+            <summary>
+            This static property will return a reference to the one instance of ToolkitApp
+            that can be created.  If it hasn't been constructed yet, it will return null.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ToolkitApp.Disposed">
+            <summary>
+            Returns true if the object has been finalized.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ToolkitApp.AppConfig">
+            <summary>
+            Returns the ConfigSection object which cooresponds to the tal.ini section that has the same name as the assembly title.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ToolkitApp.Name">
+            <summary>
+            The name of the application (the title of the executing assembly)
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ToolkitApp.TalInstallBase">
+            <summary>
+            The root directory of the TAL installation, usually \"C:\\TAL\\\"
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcToolkitApp.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcToolkitApp.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcToolkitApp.#ctor(System.Reflection.Assembly)">
+            <summary>
+            
+            </summary>
+            <param name="mainAssembly"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcToolkitApp.Finalize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcToolkitApp.Talipc">
+            <summary>
+            Returns a reference to the TalipcProtocol instance created by the application.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.ToolkitArgumentNullException">
+            <summary>
+            This exception is thrown if an invalid null argument is passed to a toolkit method.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Perms.ToolkitPerms">
+            <summary>
+            The ToolkitPerms class is used by the toolkit, and assoicated assemblies
+            to retreive toolkit permissions.  The permissions system will be initialized
+            when the "Start()" method is called for the first time.  Usually this
+            happens when the application class is constructed.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.Start">
+            <summary>
+            If not already started, initializes YPerms.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.Stop">
+            <summary>
+            If initialized, stops and clears YPerms.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.IsPermed(System.String)">
+            <summary>
+            Returns true if the specified module of the toolkit is permissioned.
+            </summary>
+            <param name="toolkitModule"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.GetAppPerm(System.String,System.String)">
+            <summary>
+            returns permission tokens for a specific app and module
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.ConfirmPermedForService(System.String)">
+            <summary>
+            Throws an exception if user not permissioned for connection.
+            </summary>
+            <param name="service"></param>
+        </member>
+        <member name="M:RealTick.Api.Perms.ToolkitPerms.GetValue(System.String)">
+            <summary>
+            Returns the value of the specified property in the toolkit permissions.
+            </summary>
+            <param name="toolkitModule"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Perms.ToolkitPerms.LoggedIn">
+            <summary>
+            Returns true if the users has logged in successfully.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Perms.ToolkitPerms.PermsAquired">
+            <summary>
+            Returns true if the toolkit has received permissions from the perms server.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.TraceMessage">
+            <summary>
+            The TraceMessage class contains all the data sent from the Protocol to an
+            IProtocolTracer implementation when a network message is traced.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_type">
+            <summary>
+            The type of message
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_dir">
+            <summary>
+            The direction of the message, incoming or outgoing.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_machine">
+            <summary>
+            The machine this message came from, or was sent to.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_service">
+            <summary>
+            The service this message came from, or was sent to.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_topic">
+            <summary>
+            The topic this message came from, or was sent to.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_item">
+            <summary>
+            The item string associated with this message.  nullptr if message type has no item string.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_format">
+            <summary>
+            The format string assoicated with this message.  nullptr if the message type has no format string.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_result">
+            <summary>
+            The result code for an ACK message.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_data">
+            <summary>
+            The data for a data message, nullptr if the message type is not RequestData or AdviseData.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_objectId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.m_notLastPage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.TraceMessage.#ctor(System.Int64,RealTick.Api.Communication.TraceMessage.MessageType,RealTick.Api.Communication.TraceMessage.MessageDir,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},RealTick.Api.Data.RawData,System.Nullable{System.Boolean})">
+            <summary>
+            
+            </summary>
+            <param name="objectId"></param>        
+            <param name="type"></param>
+            <param name="dir"></param>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+            <param name="result"></param>
+            <param name="data"></param>
+            <param name="bNotLastPage"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.TraceMessage.PrettyPrint(System.Boolean)">
+            <summary>
+            returns a legible, multi-line text block suitable for logging to the msg_app, a text window, etc.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RealTick.Api.Communication.TraceMessage.MessageType">
+            <summary>
+            This enumeration is used to indicate the type of message contained in a TraceMessage object.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.InitAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Execute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.ExecuteAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.OtherAck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Request">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.RequestData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Advise">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Unadvise">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.AdviseData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Poke">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageType.Terminate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.TraceMessage.MessageDir">
+            <summary>
+            This enumeration is used to indicate the direction of the message contained in a TraceMessage object.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageDir.Incoming">
+            <summary>
+            Message received 
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.TraceMessage.MessageDir.Outgoing">
+            <summary>
+            Message sent
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.Query">
+            <summary>
+            The Query class is used by the client to communicate with the server via a
+            conversation.  The Query class is abstract, so the client should use the class
+            derrived from Query which fits its needs.  To use a Query object, the client
+            attaches it to a connection using the Connection.AttachQuery() method, this
+            will cause the connection to allocate a conversation to service the Query object.
+            A Query can be used again after is has been detached from a connection, but a Query
+            object can only be used with one connection at a time.
+            The Query class is protocol independent, so the same Query objects can be used
+            with Connection objects of different protocols.  The client can derive its own
+            Query class to perform specific tasks.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.Finalize">
+            <summary>
+            The Query finalizer will detach the Query object from its connection, if it is attached
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.Dispose(System.Boolean)">
+            <summary>
+            Dispost the object, detach from its connection if attached.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query._AttachToConnection(RealTick.Api.Communication.Connection.Conversation,RealTick.Api.Communication.Connection)">
+            <summary>
+            Internal method used when attaching query to a connection.  Exposed for use by unit tests, but you
+            should probably not be calling this -- use connection.Attach instead.
+            </summary>
+            <param name="pConv"></param>
+            <param name="pConnection"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.Close">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.TerminateNotify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendExecute(System.String)">
+            <summary>
+            sends Execute to the server
+            </summary>
+            <param name="szItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendRequest(System.String,System.String)">
+            <summary>
+            sends request to the server
+            </summary>
+            <param name="szItem"></param>
+            <param name="szFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendAdvise(System.String,System.String)">
+            <summary>
+            sends advise to the server
+            </summary>
+            <param name="szItem"></param>
+            <param name="szFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendUnadvise(System.String,System.String)">
+            <summary>
+            sends unadvise to the server
+            </summary>
+            <param name="szItem"></param>
+            <param name="szFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendPoke(System.String,System.String,System.Byte[],System.Int32)">
+            <summary>
+            sends poke to the server
+            </summary>
+            <param name="szItem"></param>
+            <param name="szFormat"></param>
+            <param name="pData"></param>
+            <param name="nLen"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.Query.SendExecuteAck(System.UInt32,System.String)">
+            <summary>
+            Sends ExecuteAck to the server; only supported for Talipc conversations, not ClientAdapter
+            </summary>
+            <param name="nStatus"></param>
+            <param name="szItem"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RealTick.Api.Communication.Query.m_pConnection">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Communication.Query.m_pConv">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Query.Disposed">
+            <summary>
+            Indicates whether the object has already been disposed.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Query.Connected">
+            <summary>
+            Returns true if the Query object is attached, and the Connection it is attached to is connected. 
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Query.Attached">
+            <summary>
+            Returns true if the Query object is attached.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Query.TerminateCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.Query.CurrentConnection">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.IProtocolTracer">
+            <summary>
+            The IProtocolTracer interface is implemented by a object which wishes to receive
+            trace messages every time a network message is sent or received by a Protocol object.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.IProtocolTracer.Trace(RealTick.Api.Communication.TraceMessage)">
+            <summary>
+            A Protocol object calls this method to inform the object that implements IProtocolTracer
+            that a network message has been sent or received.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.IProtocolTracer.Trace(System.Int64,RealTick.Api.Communication.TraceMessage.MessageType,RealTick.Api.Communication.TraceMessage.MessageDir,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.Byte[],System.Nullable{System.Boolean})">
+            <summary>
+            This shortcut just allocates a TraceMessage and then calls the normal Trace method.
+            </summary>
+            <param name="objectId"></param>
+            <param name="type"></param>
+            <param name="dir"></param>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+            <param name="result"></param>
+            <param name="data"></param>
+            <param name="bNotLastPage"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.DataServer">
+            <summary>
+            The DataServer class is a base class for a protocol's implementation of a data server class.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.DataServer.DispatchClient(RealTick.Api.Communication.NewClientEventArgs)">
+            <summary>
+            Inform any listeners that a new client has connected to this server.
+            </summary>
+            <param name="arg"></param>
+        </member>
+        <member name="E:RealTick.Api.Communication.DataServer.OnNewClient">
+            <summary>
+            raised when a new client connects to this server.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.DataServer.NewClientHandler">
+            <summary>
+            delegate type for OnNewClient handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="ncea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.DataEventArgs">
+            <summary>
+            The DataEventArgs class provides data to a Data event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.DataEventArgs.#ctor(System.String,System.String,RealTick.Api.Data.RawData,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="format"></param>
+            <param name="data"></param>
+            <param name="notLastPage"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.DataEventArgs.Item">
+            <summary>
+            Returns the item, (usually a TQL query), that the data is associated with.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.DataEventArgs.Format">
+            <summary>
+            Returns the format of the data.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.DataEventArgs.Data">
+            <summary>
+            Returns the actual data as a RawData object.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientRequest">
+            <summary>
+            The ClientRequest class contains the data, and the response methods for
+            a TQL request from the client.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientRequest.#ctor(RealTick.Api.Communication.ClientConnection,System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            The constructor is usually only used by the protocol implementations, not by the user.
+            </summary>
+            <param name="client"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientRequest.Nak(System.UInt16)">
+            <summary>
+            Use the method to NAK the request.
+            </summary>
+            <param name="status">The status of the NAK, the highest bit of the status should be 0.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientRequest.Respond(RealTick.Api.Data.RawData[])">
+            <summary>
+            Use the method to send data to the client in response to this request.
+            </summary>
+            <param name="response">
+            A RawData reference that contains the response to the request.
+            The format of the RawData object should match the format specified in the request.
+            </param>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientRequest.Item">
+            <summary>
+            Returns the item string (TQL query) of the request.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientRequest.Format">
+            <summary>
+            Returns the requested format for the request.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientRequest.Client">
+            <summary>
+            Returns a reference to the ClientConnection that issued the request.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.LogTextEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.LogTextEventArgs.#ctor(RealTick.Api.Application.Severity,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="sev"></param>
+            <param name="text"></param>
+        </member>
+        <member name="P:RealTick.Api.Application.LogTextEventArgs.Text">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.QueryList">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.QueryList.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.QueryList.Add(RealTick.Api.Communication.Query)">
+            <summary>
+            
+            </summary>
+            <param name="newQuery"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.QueryList.Remove(RealTick.Api.Communication.Query)">
+            <summary>
+            
+            </summary>
+            <param name="rem"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.QueryList.Count">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.QueryList.Item(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.QueryList.SafeList">
+            <summary>
+            a list of queries that is safe to enumerate, even if the colleciton
+            is changing at the same time
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.OtherAckMessage">
+            <summary>
+            Sent when OtherAck callback is received.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.OtherAckMessage.#ctor(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="nStatus"></param>
+            <param name="pstnItem"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.OtherAckMessage.GetMsgType">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.OtherAckMessage.Status">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.OtherAckMessage.Item">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewClientEventArgs">
+            <summary>
+            Gives details of a newly connected client.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewClientEventArgs.#ctor(RealTick.Api.Communication.ClientConnection)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewClientEventArgs.Client">
+            <summary>
+            Returns a reference to a ClientConnection object which cooresponds to the new client.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.DataMessage">
+            <summary>
+            Sent when Data callback is received.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.ConfigItemAttribute">
+            <summary>
+            The ConfigItemAttribute attribute is used to mark public fields in the
+            client's application class as relating to entries in the application's
+            section of the tal.ini file.
+            When the instance of the application class
+            is constructed when the application starts, the constructor reads these
+            fields, and when the application shuts down, an event handler writes
+            the new values back to the tal.ini file.  So all the client has to do to
+            manage the app's configuration is read and set the attributed fields.
+            The cooresponding settings in the tal.ini file will be in the section
+            with same name as the application title, and the setting will have the
+            same name as the field, unless the client specifies otherwise.  The client
+            can also specify a default value, for the case where the value is not
+            present at startup, (in this case the default will be written to the tal.ini
+            the first time the app runs.)  The field can be of any type that can be
+            implicitly converted to and from a string with the Convert.ChangeType
+            method.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigItemAttribute.#ctor">
+            <summary>
+            There are no required parameters for the ConfigItemAttribute attribute.
+            If no optional parameters are set, cooresponding tal.ini setting will
+            have the same name as the field, and be in the section with the same name
+            as the app title.  By default he default value is an empty string.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ConfigItemAttribute.Default">
+            <summary>
+            The Default optional parameter is used to provide a default value
+            for the tal.ini setting that cooresponds to the attributed field.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ConfigItemAttribute.Name">
+            <summary>
+            The Name optional parameter allows the client to specify a different
+            name for the cooresponding tal.ini setting than the name of the
+            attributed field.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.ConfigItemAttribute.Section">
+            <summary>
+            The Section optional parameter allows the client to specify a different
+            section name for the cooresponding tal.ini setting than the title of
+            the application.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.ToolkitArgumentException">
+            <summary>
+            This exception is thrown if an invalid argument is passed to a toolkit method (except for
+            the special case of an invalid null argument, which results in a ToolkitArgumentNullException)
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.SyncTimeoutException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.SymbolError">
+            values for T_SYMBOL_ERROR
+        </member>
+        <member name="T:RealTick.Api.Data.IRow">
+            <summary>
+            This is the IRow interface.  Any class which represents a row in a TAL
+            data block implements IRow.  It extends ICollection, so it can be enumerated
+            with constructs like C#'s foreach statement.  The indexers allow it to be used
+            as a sequential collection, or a associative collection, of IField interface references.
+            
+            Classes which implement IRow are not necessarily immutable.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IRow.Item(System.Int32)">
+            <summary>
+            This indexer allows the client to retreive a field at a particular position
+            treating the row as a sequential collection.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IRow.Item(System.String)">
+            <summary>
+            This indexer allows the client to retreive a field that is identified by a particular name,
+            treating the row as a associate collection.  For improved performance, use the FieldInformation
+            reference indexer.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IRow.Item(RealTick.Api.Data.FieldInformation)">
+            <summary>
+            This indexer allows the client to retreive a field that is identified by a particular
+            FieldInformation reference.  Treating thr row as an associateive collection.  This
+            indexer performes better than the name string indexer.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.IDataBlock">
+            <summary>
+            The IDataBlock is implemented by any class which represents a TAL data block. "
+            It is derived from ICollection, so it acts as a sequential collection of IRow "
+            references, and is enumerable by constructs such as foreach.",
+            
+            Classes which implement IDataBlock are not necessarily immutable.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IDataBlock.GetFields">
+             <summary>
+             Returns an array containing the FieldInfomration references associated with
+             every field contained in the data block.  The order of the references is not
+             necessarily the same as the order of the fields in the rows, nor is every
+             field contained in the array guarenteed to be in every row.
+            
+             The return value will always be an array of FieldInformation references, and
+             should never have a nullptr value.
+             </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IDataBlock.Item(System.Int32)">
+            <summary>
+            This indexer allows the client to retrieve the nth row of the data block, just
+            like an array.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.IAsyncThreading">
+            <summary>
+            The IAsyncThreading is an interface which is used by the AsyncQuery object
+            to handle marshalling callbacks to the proper thread.  There are several
+            \"Threading\" classes which implement this interface and allow the client
+            to specify how the AsyncQuery class should thread the callbacks/event handlers
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchExecuteAck(System.Object,RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger an ExecuteAck callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchOtherAck(System.Object,RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger an OtherAck callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchRequestData(System.Object,RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger a RequestData callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchAdviseData(System.Object,RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger an AdviseData callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchTerminate(System.Object,System.EventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger a Terminate callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.IAsyncThreading.DispatchExecute(System.Object,RealTick.Api.Communication.ExecuteEventArgs)">
+            <summary>
+            This method is called by AsyncQuery when it wants to trigger an Execute callback.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IAsyncThreading.Name">
+            <summary>
+            Returns the name of the Threading class.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.FreeAsyncThreading">
+            <summary>
+            The FreeAsyncThreading class causes the AsyncQuery to call the client's callback
+            or event handler on the same thread that the protocol used to trigger the callback.
+            This provides no synchronization, and callbacks can come at any time.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchExecuteAck(System.Object,RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="aea"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchOtherAck(System.Object,RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="aea"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchRequestData(System.Object,RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="dea"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchAdviseData(System.Object,RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="dea"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchTerminate(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="ea"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.FreeAsyncThreading.DispatchExecute(System.Object,RealTick.Api.Communication.ExecuteEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="dea"></param>
+        </member>
+        <member name="P:RealTick.Api.Data.FreeAsyncThreading.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewExecuteAckEventArgs">
+            <summary>
+            The NewExecuteAckEventArgs class is used to pass arguments to a NewExecuteAck event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewExecuteAckEventArgs.#ctor(RealTick.Api.Communication.ClientExecuteAck)">
+            <summary>
+            
+            </summary>
+            <param name="exe"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewExecuteAckEventArgs.ExecuteAck">
+            <summary>
+            Returns a reference to the ClientExecute object associated with the execute for which the event was raised.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ExecuteAckMessage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ExecuteAckMessage.#ctor(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="nStatus"></param>
+            <param name="pstnExecute"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ExecuteAckMessage.GetMsgType">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.ExecuteAckMessage.Status">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ExecuteAckMessage.Execute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.ClientAdapter.ClientAdapterConnection">
+            <summary>
+            The ClientAdapterConnection class is a subclass of Connection, which
+            implements a connection to a TAL server via the client adapter.
+            The ClientAdapterConnection should have the same behaviour as other
+            Connection implementations.
+            ClientAdapterConnections can only be used to connect to price servers
+            and news servers at this time.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.#ctor(System.String,System.String,System.String,RealTick.Api.ClientAdapter.ClientAdapterProtocol)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="protocol"></param>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.#ctor(System.String,System.String,System.String,RealTick.Api.ClientAdapter.ClientAdapterProtocol,RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="protocol"></param>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.#ctor(System.String,System.String,System.String,RealTick.Api.ClientAdapter.ClientAdapterProtocol,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="protocol"></param>
+            <param name="user"></param>
+            <param name="domain"></param>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.AttachQuery(RealTick.Api.Communication.Query)">
+            <summary>
+            Attach query to connection.  This kicks off the connection process, sending an initiate to the server.
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.DetachQuery(RealTick.Api.Communication.Query)">
+            <summary>
+            Detach query from the connection.
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterConnection.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterConnection.Connected">
+            <summary>
+            Indicates whether currently connected to server.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterConnection.Machine">
+            <summary>
+            Name of server machine.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterConnection.Service">
+            <summary>
+            Name of server service.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterConnection.Topic">
+            <summary>
+            Name of server topic.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.ClientAdapter.ClientAdapterConnection.AttachedQueries">
+            <summary>
+            Returns list of attached queries.  In current implementation, this will always contain
+            either 0 or 1 elements.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode">
+            <summary>
+            Inidicates the connection style that the client adapter should use.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode.CA">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode.NativeTalipc">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode.CADirectConnect">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.DataFormat">
+            <summary>
+            The DataFormat enumeration is used to indicate a particular data format.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.DataFormat.Binary">
+            <summary>
+            Equivalent to the format string "TAL4"
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.DataFormat.Unknown">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.Native.Conversation">
+            <summary>
+            The Conversation class encapsulates the TALIPC conversation, with its WINAPI methods and callbacks.  This was originally a
+            C++/CLI class, wrapping the C declarations in TNAPI2.H.  It has since been translated into a C# class, wrapping the Interop
+            definitions in TALIPC.CS.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp">
+            <summary>
+            The ClientAdapterToolkitApp class is a subclass of ToolkitApp that uses
+            the client adapter as the native protocol.  While the client should derive
+            their own application class, it can use this one as is, if it just needs to use
+            the client adapter to talk to servers, and doesn't need any configuration fields.
+            This is useful when writing small applications.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp.GetConnection(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp.GetConnectionWithMode(System.String,System.String,System.String,RealTick.Api.ClientAdapter.ClientAdapterConnection.Mode)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="mode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp.GetConnectionForUser(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="user"></param>
+            <param name="domain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.ClientAdapter.ClientAdapterToolkitApp.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:RealTick.Api.Application.ConfigAttributeHelper">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigAttributeHelper.#ctor(System.Object,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="target"></param>
+            <param name="appSection"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigAttributeHelper.GetName(RealTick.Api.Application.ConfigItemAttribute,System.Reflection.FieldInfo)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="field"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigAttributeHelper.ReadConfig(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="pType"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigAttributeHelper.WriteConfig(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="pType"></param>
+        </member>
+        <member name="T:RealTick.Api.Data.IField">
+            <summary>
+            This is the IField interface.  Any class which represents a field in a TAL
+            data block will implement this interface.  The interface allows the client
+            to retreive the name and type of the field, convert the field to a string,
+            and get the value in its native type.  Class objects which implement IField
+            are immuttable, and cannot change after they are constructed.  Therefore no
+            thread synchronization is required.")
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.FieldInfo">
+            <summary>
+            Returns the FieldInformation reference that cooresponds to this field's.
+            field ID. FieldInformation references are unique, so two IField interfaces
+            (f and g) refer to the same field ID if and only if f.FieldInfo == g.FieldInfo.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.Type">
+            <summary>
+            Returns the field type.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.Elements">
+            <summary>
+            Returns the number of elements in a field.  If it is a scaler, this will be 1.
+            If it is a vector, it will be the number of elements in the vector. If the field is
+            a vector and has nullptr value, it will be 0.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.StringValue">
+            <summary>
+            Returns the string value of the field.  It will return nullptr if the field cannot be
+            represented as a string.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.StringVectorValue">
+            <summary>
+            Returns the string vector value of the field.  It will return nullptr if the type
+            is not StringVector.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.DoubleValue">
+            <summary>
+            Returns the floating point value of the field.  It will return 0 if it is not
+            a numeric field.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.DoubleVectorValue">
+            <summary>
+            Returns the double vector value of the field.  It will return nullptr if the type
+            is not DoubleVector
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.PriceValue">
+            <summary>
+            Returns the price value of the field.  It will return 0 if the type is not PriceScalar.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.PriceVectorValue">
+            <summary>
+            Returns the price vector value.  It will return nullptr if the type is not
+            PriceVector.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.IntValue">
+            <summary>
+            Returns the integer value.  It will return 0 if the type is not
+            IntegerScalar.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.IntVectorValue">
+            <summary>
+            Returns the integer vector value.  It will return nullptr if the type is
+            not IntegetVector.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.TimeValue">
+            <summary>
+            Returns the time span value.  It will return 0 if the type is not
+            TimeScalar.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.TimeVectorValue">
+            <summary>
+            Returns the time vector value.  It will return nullptr if the type is not
+            TimeVector.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.DateValue">
+            <summary>
+            Returns the date value.  It will return DateTime.MinValue if the type is
+            not DateScalar.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.DateVectorValue">
+            <summary>
+            Returns the date vector value.  It will return nullptr if the type is not
+            DateVector.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.ErrorValue">
+            <summary>
+            Returns the error code associated with the field if the type is ErrorScalar,
+            otherwise, it returns FieldError.InvalidError
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.IField.BlobValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.FieldType">
+            <summary>
+            The FieldType class is used to indicate what type of data is contained
+            in an IField reference.  If the type is a vector type, then the value
+            anded with 'Vector' will be no zero.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.DoubleScalar">
+            <summary>
+            Scalar double precision floating point value
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.PriceScalar">
+            <summary>
+            Scalar price value, (Integer with a base code)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.IntScalar">
+            <summary>
+            Scalar 32 bit integer value
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.StringScalar">
+            <summary>
+            Scalar variable length ANSI string value
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.DateScalar">
+            <summary>
+            Scalar date value, (date only, time will be set to 12:00am)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.TimeScalar">
+            <summary>
+            Scalar time value, (time past 12:00am)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.EmptyScalar">
+            <summary>
+            Empty field
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.BlobScalar">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.Tal4Scalar">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.ErrorScalar">
+            <summary>
+            Error field, (the server was unable to send this field due to an error)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.Vector">
+            <summary>
+            Vector bit, (a field type t indicates a vector field if and only if t &amp; FieldType.Vector != 0)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.DoubleVec">
+            <summary>
+            Vector of double values
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.PriceVec">
+            <summary>
+            Vector of price values
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.IntVec">
+            <summary>
+            Vector of integer values
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.StringVec">
+            <summary>
+            Vector of string values
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.DateVec">
+            <summary>
+            Vector of date values
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldType.TimeVec">
+            <summary>
+            Vector of time values
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ExecuteMessage">
+            <summary>
+            Sent when an Execute callback is received
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ExecuteMessage.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ExecuteMessage.GetMsgType">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.ExecuteMessage.Command">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientExecute">
+            <summary>
+            The ClientExecute class is used to store the execute string associated with an execute from the client.
+            The class provides a method to ACK or NAK the execute.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientExecute.#ctor(RealTick.Api.Communication.ClientConnection,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+            <param name="execute"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientExecute.Ack(System.UInt16)">
+            <summary>
+            Sends ExecuteAck message to the client.
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientExecute.ExecuteString">
+            <summary>
+            The execute string the client sent with this execute.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientExecute.Client">
+            <summary>
+            A reference to the ClientConnection object assoicated with this execute.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.AsyncQuery">
+            <summary>
+            The AsyncQuery class is a subclass of Query that allows asynchronous
+            operations against a server.  The methods return immediatly, and the
+            client must either register event handlers, or subclass AsyncQuery,
+            and provide its own implementation for the callback functions.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.#ctor(RealTick.Api.Communication.Protocol,System.String,System.String,System.String,RealTick.Api.Data.IAsyncThreading)">
+            <summary>
+            Construct an AsyncQuery.  The query will not actually attempt connecting to a server until you call Connect().
+            </summary>
+            <param name="protocol"></param>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="threadModel">Optional -- if no thread model is specific, a FreeAsyncThreading model will be used.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.ExecuteAckCallback(RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            The ExecuteAckCallback virtual method is called when an ExecuteAck 
+            is received from the server.  The default implementation fires the 
+            OnExecuteAck event.
+            </summary>
+            <param name="aea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.OtherAckCallback(RealTick.Api.Communication.AckEventArgs)">
+            <summary>
+            The OtherAckCallback virtual method is called when an OtherAck
+            is received from the server.  The default implementation fires the
+            OnOtherAck event.
+            </summary>
+            <param name="aea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.RequestDataCallback(RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            The RequestDataCallback virtual method is called when request data
+            is received from the server.  The default implementation fires the
+            OnRequestData event.
+            </summary>
+            <param name="dea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.AdviseDataCallback(RealTick.Api.Communication.DataEventArgs)">
+            <summary>
+            The AdviseDataCallback virtual method is called when advise data
+            is received from the server.  The default implementation fires the
+            OnAdviseData event.
+            </summary>
+            <param name="dea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.TerminateCallback(System.EventArgs)">
+            <summary>
+            The TerminateCallback virtual method is called when the assoicated
+            conversation is prematurely terminated.  The default implementation
+            fires the OnTerminate event.
+            </summary>
+            <param name="ea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.ExecuteCallback(RealTick.Api.Communication.ExecuteEventArgs)">
+            <summary>
+            The ExecuteCallback virtual method is called when the server 
+            sends an Execute to the client. This is only supported for Talipc
+            conversations, not ClientAdapter.
+            </summary>
+            <param name="ea"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Execute(System.String)">
+            <summary>
+            Sends an Execute message to the server.
+            </summary>
+            <param name="execute">The execute string to send to the server</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.ExecuteAck(System.UInt32,System.String)">
+            <summary>
+            Sends an ExecuteAck message to the server.
+            </summary>
+            <param name="status"></param>
+            <param name="execute">The execute string to send to the server</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Advise(System.String,System.String)">
+            <summary>
+            Sends an Advise message to the server.
+            </summary>
+            <param name="item">The TQL query string to send to the server</param>
+            <param name="format">The format the server should use to encode the data.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Advise(System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            Sends an Advise message to the server.
+            </summary>
+            <param name="item">The TQL query string to send to the server</param>
+            <param name="format">The format code of the format the server should use to encode the data</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Advise(RealTick.Api.Communication.TqlStatement)">
+            <summary>
+            Sends an Advise message to the server.  This overload is not yet implemented.
+            </summary>
+            <param name="tql"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Unadvise(System.String,System.String)">
+            <summary>
+            Cancels an active advise on the server.
+            </summary>
+            <param name="item">The TQL query of the advise to cancel</param>
+            <param name="format">The format of the advise to cancel</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Unadvise(System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            Cancels an active advise on the server.
+            </summary>
+            <param name="item">The TQL query of the advise to cancel</param>
+            <param name="format">The format code of the advise to cancel</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Request(System.String,System.String)">
+            <summary>
+            Sends a request to the server.
+            </summary>
+            <param name="item">The TQL query string to send to the server</param>
+            <param name="format">The format the server should use to encode the data.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Request(System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            Sends a request to the server.
+            </summary>
+            <param name="item">The TQL query string to send to the server</param>
+            <param name="format">The format code of the format the server should use to encode the data</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Request(RealTick.Api.Communication.TqlStatement)">
+            <summary>
+            Sends a request to the server.  This overload is not yet implemented.
+            </summary>
+            <param name="tql"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Poke(System.String,RealTick.Api.Data.RawData)">
+            <summary>
+            Pokes a data block into the server.
+            </summary>
+            <param name="item">The item string identifing the data being poked.</param>
+            <param name="data">The data to poke into the server.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.Close">
+            <summary>
+            Inert -- does nothing.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.AsyncQuery.TerminateNotify">
+            <summary>
+            Informs any attached listeners that a terminate has arrived from the server.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnExecuteAck">
+            <summary>
+            The OnExecuteAck event fires when an ExecuteAck is sent by the server.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnExecute">
+            <summary>
+            The OnExecute event fires when an Execute is sent by the server.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnOtherAck">
+            <summary>
+            The OnOtherAck event fires when an OtherAck is sent by the server.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnRequestData">
+            <summary>
+            The OnRequestData event fires when the server returns data in response to a sucessful request.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnAdviseData">
+            <summary>
+            The OnAdviseData event fires when the server sends data for an active advise.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.AsyncQuery.OnTerminate">
+            <summary>
+            The OnTerminate event fires when the conversation associated with the Query object is prematurely terminated.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.AsyncQuery.AckHandler">
+            <summary>
+            The AckHandler is the event handler type for receiving ACK messages,
+            these include OtherAck and ExecuteAck.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.AsyncQuery.DataHandler">
+            <summary>
+            The DataHandler is the event handler type for receiving data messages,
+            these include RequestData and AdviseData.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.AsyncQuery.ExecuteHandler">
+            <summary>
+            The ExecuteHandler is the event handler type for receiving execute messages.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.AsyncQuery.TerminateHandler">
+            <summary>
+            The TerminateHandler is the event handler type for receiving terminate
+            notifications.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.MessageAppEx">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.MessageAppEx.LogSev(RealTick.Api.Application.Severity,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="sev"></param>
+            <param name="fmt"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.MessageAppEx.LogException(System.Exception)">
+            <summary>
+            
+            </summary>
+            <param name="ex"></param>
+        </member>
+        <member name="E:RealTick.Api.Application.MessageAppEx.OnLog">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Application.MessageAppEx.OnData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.MessageAppEx.LogData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.MessageAppEx.LogMessages">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.MessageAppEx.LogObjects">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewExecuteEventArgs">
+            <summary>
+            The NewExecuteEventArgs class is used to pass arguments to a NewExecute event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewExecuteEventArgs.#ctor(RealTick.Api.Communication.ClientExecute)">
+            <summary>
+            
+            </summary>
+            <param name="exe"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewExecuteEventArgs.Execute">
+            <summary>
+            Returns a reference to the ClientExecute object associated with the execute for which the event was raised.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientPoke">
+            <summary>
+            The ClientPoke class is used to store the item string and RawData object 
+            associated with a poke.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientPoke.#ctor(RealTick.Api.Communication.ClientConnection,System.String,RealTick.Api.Data.RawData)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+            <param name="item"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientPoke.Ack(System.UInt16)">
+            <summary>
+            Sends an ACK to the client.
+            </summary>
+            <param name="status">The status code to send with the ACK, use 0x8000 for success, and 0x0000 for failure.</param>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientPoke.Item">
+            <summary>
+            Returns the item string of the poke.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientPoke.Client">
+            <summary>
+            Returns the ClientConnection referecne associated with this poke.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientPoke.Data">
+            <summary>
+            Returns a reference to the RawData object that contains the data sent with this poke.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.MapField">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.MapField.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.MapField.#ctor(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="fieldID"></param>
+        </member>
+        <member name="P:RealTick.Api.Application.MapField.ID">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Properties.Resources.FidDef">
+             <summary>
+               Looks up a localized string similar to ; This file was generated 
+            ; by FIDManager application.
+            ; Do not modify it manually.
+            
+            PROD_CATG,1001,INT,IDN Product Code
+            RDNDISPLAY,1002,INT,IDN Display Type
+            DISP_NAME,1003,STRING,Symbol
+            EXCHID,1004,STRING,Exch ID
+            TIMACT,1005,TIME,TimeAct
+            TRDPRC_1,1006,LPACK,Last Price
+            TRDPRC_2,1007,LPACK,Prev. Price
+            TRDPRC_3,1008,LPACK,Prev. 2
+            TRDPRC_4,1009,LPACK,Prev. 3
+            TRDPRC_5,1010,LPACK,Prev. 4
+            NETCHNG_1,1011,LPACK,Net Chg.
+            HIGH_1,1012,LPACK,High
+            LOW_1,1013,LPACK,Low
+            PRCTCK_1,1014,STRING,Up/Down
+            CURR [rest of string was truncated]&quot;;.
+             </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.ToolkitException">
+            <summary>
+            This exception is thrown for general toolkit problems.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Exceptions.ToolkitException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:RealTick.Api.Exceptions.ToolkitException.#ctor(System.String,System.Exception)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+            <param name="ex"></param>
+        </member>
+        <member name="T:RealTick.Api.Data.Field">
+            <summary>
+            The Field class is used to represent the data of a single field.  It is a
+            pair of a field ID (provided as a field name, or FieldInformation ref), and
+            an object reference containing the field data.
+            This class is usally constructed
+            by the RawData class when converting a TAL4 or TAL3 block into .net data.
+            However a client can construct its own field by using the public constructor.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.Equals(System.Object)">
+            <summary>
+            Checks two field values for equality.
+            </summary>
+            <param name="operand"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.Equals(System.Object,System.Object)">
+            <summary>
+            Static version of the equality test.
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.CompareTo(System.Object)">
+            <summary>
+            Compares the value of two fields, allows lists of fields to be sorted.
+            </summary>
+            <param name="operand"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.#ctor(RealTick.Api.Data.FieldInformation,RealTick.Api.Data.FieldType,System.Object)">
+            <summary>
+            This constructor allows the client to construct its own field objects.
+            </summary>
+            <param name="fieldInfo">The field ID</param>
+            <param name="type">The type of field to create</param>
+            <param name="value">The data of the field, boxed into an object reference.</param>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.#ctor(System.String,RealTick.Api.Data.FieldType,System.Object)">
+            <summary>
+            This constructor allows the client to construct its own field objects.
+            </summary>
+            <param name="fieldName">The name of the field to create</param>
+            <param name="type">The type of the field to create</param>
+            <param name="value">The data of the field, boxed into an object reference.</param>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.ToString">
+            <summary>
+             Returns the string representation of the field.  This method allows the
+             client to use the string.Format(), to convert field data into formatted strings.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.ToString(System.String,System.IFormatProvider)">
+            <summary>
+            Same as the ToString() method, but allows the use of a format string.
+            </summary>
+            <param name="format"></param>
+            <param name="formatProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~System.String">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~System.Double">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~RealTick.Api.Data.Price">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~System.Int32">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~System.TimeSpan">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~System.DateTime">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.op_Explicit(RealTick.Api.Data.Field)~RealTick.Api.Data.FieldError">
+            <summary>
+            
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Field.Value(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="operand"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.FieldInfo">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.Type">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.Elements">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.StringValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.StringVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.DoubleValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.DoubleVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.PriceValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.PriceVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.IntValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.IntVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.TimeValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.TimeVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.DateValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.DateVectorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.ErrorValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Field.BlobValue">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.DataBlock">
+             <summary>
+             The DataBlock class is used to represent a data block that is not
+             required to be rectangular.  TAL4 data is converted to DataBlock objects.
+            
+             DataBlocks are usually constructed by the RawData.GetDataAsBlock() method,
+             but clients can construct their own.  Usally this is done when the client
+             needs to send data back to the server as TAL4
+             </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.DataBlock.GetEnumerator">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.DataBlock.#ctor(RealTick.Api.Data.Row[])">
+            <summary>
+            This constructor allows the client to create a DataBlock object
+            from an array of Row objects.  The function supports variable arguments,
+            so the client can either call it with an array of rows, or with individual rows,
+            each included as its own arguement.  (e.g. DataBlock(rowarray) or DataBlock(row1,row2,row3)
+            </summary>
+            <param name="rows"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.DataBlock.ConvertToBinary">
+            <summary>
+            Constructs a RawData object using this block.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RealTick.Api.Communication.UnadviseEventArgs">
+            <summary>
+            The UnadivseEventArgs is used to pass arguments to unadivse event handlers.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.UnadviseEventArgs.#ctor(RealTick.Api.Communication.ClientAdvise)">
+            <summary>
+            
+            </summary>
+            <param name="advise"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.UnadviseEventArgs.Advise">
+            <summary>
+            Returns a reference to the ClientAdvise object which cooresponds to the advise which is being unadvised.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.SyncQuery">
+            <summary>
+            The SyncQuery class is a type of Query.  The SyncQuery allows the client
+            to perform synchronous operations against a server.  (the method doesn't
+            return until the response from the server is ready.)  Only requests, executes
+            and pokes are allowed because advises are intrinsicly asynchronous.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.#ctor(RealTick.Api.Communication.Protocol,System.String,System.String,System.String)">
+            <summary>
+            Construct an SyncQuery.  The query will not actually attempt connecting to a server until you call Connect().
+            </summary>
+            <param name="protocol"></param>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Execute(System.String)">
+            <summary>
+            Sends an execute message to the server and waits for the ACK message.
+            </summary>
+            <param name="execute">Returns true if the execute succeeded, otherwise false.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Request(System.String,System.String)">
+            <summary>
+            Sends a request message to the server and waits for the data to return.
+            Returns a RawData reference if the request is successful, and returns
+            a nullptr reference if it fails, or there is no data available.
+            </summary>
+            <param name="item">The TQL query string to send to the server</param>
+            <param name="format">The format the server should use to encode the data.</param>
+            <returns>Returns nullptr if the request was not successfull, otherwise a RawData reference.</returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Request(RealTick.Api.Communication.TqlStatement)">
+            <summary>
+            Sends a request message to the server and waits for the data to return.
+            Returns a RawData reference if the request is successful, and returns
+            a nullptr reference if it fails, or there is no data available.
+            </summary>
+            <param name="tql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Request(RealTick.Api.Communication.TqlStatement,RealTick.Api.Data.DataFormat)">
+            <summary>
+            
+            </summary>
+            <param name="tql"></param>
+            <param name="fmt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Request(System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            
+            </summary>
+            <param name="tql"></param>
+            <param name="fmt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Poke(System.String,RealTick.Api.Data.RawData)">
+            <summary>
+            Sends a poke message to the server, and waits for the ACK message to return.
+            returns true if the ACK was successful, otherwise false.
+            </summary>
+            <param name="item">The item string identifing the data being poked.</param>
+            <param name="data">The data to poke into the server.</param>
+            <returns>Returns true if the poke was successful, otherwise false.</returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.Close">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.SyncQuery.TerminateNotify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.SyncQuery.Timeout">
+            <summary>
+            This property is used to set the timeout for synchronous requests.  The value is the
+            desired timeout in milliseconds.  A value of -1 indicates you want an infinite timeout.
+            The timeout will default to 60 seconds.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection">
+            <summary>
+            The ClientConnection object encapsulates a client's connection to the server.
+            Use the ClientConnection object to register events for various messages from the client.
+            The ClientConnection class serves as a base class for the protocol implementation's client connection class.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.#ctor(System.String,System.Byte[])">
+            <summary>
+            Constructor, just records parameters for later use.
+            </summary>
+            <param name="peer">Name of the machine from which connection is incoming.</param>
+            <param name="cookie">Permissions cookie supplied with incoming connection.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.Terminate">
+            <summary>
+            The Terminate() method is used to allow the server to terminate a client's connection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._RequestRespond(System.String,RealTick.Api.Data.RawData[])">
+            <summary>
+            Send response data to this client.
+            </summary>
+            <param name="item">TQL item.</param>
+            <param name="data">TAL4 data.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._RequestNak(System.String,RealTick.Api.Data.DataFormat,System.UInt16)">
+            <summary>
+            Sends OtherAck message to this client.
+            </summary>
+            <param name="item"></param>
+            <param name="format"></param>
+            <param name="status"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._AdviseAck(System.UInt16,System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            Sends OtherAck message to this client.
+            </summary>
+            <param name="status"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._AdviseData(RealTick.Api.Data.RawData,System.String)">
+            <summary>
+            Sends update data to this client.
+            </summary>
+            <param name="data"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._ExecuteAck(System.String,System.UInt16)">
+            <summary>
+            Sends ExecuteAck message to this client.
+            </summary>
+            <param name="exe"></param>
+            <param name="status"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._PokeAck(System.String,RealTick.Api.Data.DataFormat,System.UInt16)">
+            <summary>
+            Sends OtherAck message to this client.
+            </summary>
+            <param name="Item"></param>
+            <param name="format"></param>
+            <param name="status"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection._Execute(System.String)">
+            <summary>
+            Sends Execute message to this client
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.MkFormatString(RealTick.Api.Data.DataFormat)">
+            <summary>
+            Converts a DataFormat to its text representation (i.e. Binary -> TAL4).
+            </summary>
+            <param name="fmt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.MkFormat(System.String)">
+            <summary>
+            Converts a text representation to a DataFormat (i.e. TAL4 -> Binary).
+            </summary>
+            <param name="szFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.MakeData(System.Byte[],System.String)">
+            <summary>
+            Constructs a RawData object from the values.
+            </summary>
+            <param name="data"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientConnection.Peer">
+            <summary>
+            Returns the ip address of the client.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientConnection.Cookie">
+            <summary>
+            Returns the perm cookie from the client.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientConnection.Connected">
+            <summary>
+            Indicates whether client is currently connected.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewAdvise">
+            <summary>
+            Raised when client registers a new advise.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewUnadvise">
+            <summary>
+            Raised when client closes and advise.  If the client closes this advise, the server can be notified both by this event from the actual
+            ClientConnection object and also from the equivalent event on the child ClientAdvise object.  They 
+            both get raised, so either one may be used to note the unadvise.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewRequest">
+            <summary>
+            Raised when client sends a request.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewPoke">
+            <summary>
+            raised when client sends a poke.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewExecute">
+            <summary>
+            Raised when client sends an execute.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnNewExecuteAck">
+            <summary>
+            Raised when client sends an execute ack.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientConnection.OnClientTerminate">
+            <summary>
+            Raised when client sends a terminate.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientConnection.Store">
+            <summary>
+            List of advises currently registered by this client.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewAdviseHandler">
+            <summary>
+            Delegate type used for OnNewAdvise event.
+            </summary>
+            <param name="sender"></param>
+            <param name="naea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewUnadviseHandler">
+            <summary>
+            Delegate type used for OnNewUnadvise event.
+            </summary>
+            <param name="sender"></param>
+            <param name="naea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewRequestHandler">
+            <summary>
+            delegate type for OnNewRequest event.
+            </summary>
+            <param name="sender"></param>
+            <param name="nrea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewPokeHandler">
+            <summary>
+            delegate type for OnNewPoke event.
+            </summary>
+            <param name="sender"></param>
+            <param name="npea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewExecuteHandler">
+            <summary>
+            delegate type for OnNewExecute handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="neea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.NewExecuteAckHandler">
+            <summary>
+            delegate type for OnNewExecuteAck handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="neea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.ClientTerminateHandler">
+            <summary>
+            Delegate type for OnClientTermiante event.
+            </summary>
+            <param name="sender"></param>
+            <param name="ea"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientConnection.AdviseStore">
+            <summary>
+            Holds all the currently-registered advises for this client.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.NewAdvise(System.String)">
+            <summary>
+            Checks whether a proposed advise will be new or not.
+            </summary>
+            <param name="item"></param>
+            <returns>True if the advise will be new, false if the same advise was already registered.</returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.AddAdvise(System.String,RealTick.Api.Communication.ClientAdvise)">
+            <summary>
+            Registers the advise.
+            </summary>
+            <param name="item"></param>
+            <param name="advise"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.Unadvise(System.String)">
+            <summary>
+            Deregisters the advise.
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.UnadviseAll">
+            <summary>
+            Deregisters all advises.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientConnection.AdviseStore.GetEnumerator">
+            <summary>
+            Returns enumerator of all currently registered advises.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RealTick.Api.Application.Severity">
+            <summary>
+            The Severity enumeration is used to indicate the severity level to use
+            when sending a log message to the TAL message app.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.Severity.Trace">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.Severity.Info">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.Severity.Warning">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.Severity.Critical">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientExecuteAck">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientExecuteAck.#ctor(RealTick.Api.Communication.ClientConnection,System.UInt32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+            <param name="status"></param>
+            <param name="execute"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientExecuteAck.ExecuteString">
+            <summary>
+            The execute string the client sent with this execute.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientExecuteAck.Client">
+            <summary>
+            A reference to the ClientConnection object assoicated with this execute.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientExecuteAck.Status">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.Price">
+            <summary>
+            The Price value type is used to store a price value.  It corresponds to
+            the TAL LPACK structure.  It contains in integer value, and a base code.
+            The base code determines a fractional multiplier, which is multiplied "
+            by the integer value to get the actual price value.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.#ctor(System.String)">
+            <summary>
+            This constructor creates a price value from a string representation of
+            a price value.  (e.g. \"5 1/8\")  The constructor will pick the best
+            base code.
+            </summary>
+            <param name="priceString">A string representation of the price</param>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.#ctor(System.String,RealTick.Api.Data.Basecode)">
+            <summary>
+            This constructor creates a price value from a string representation of 
+            a price value.  (e.g. \"5 1/8\")  The constructor allows the client to
+            specify the base code.
+            </summary>
+            <param name="priceString">A string representation of the price</param>
+            <param name="bc">The desired base code</param>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.Equals(System.Object,System.Object)">
+            <summary>
+            Static version of the equality test.
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.ToString(System.String,System.IFormatProvider)">
+            <summary>
+            Converts the price to a string representation.  Allows the client to
+            provide a formating string (this feature is not yet implemented.)  This
+            method is usally implicitly called by string.Format()
+            </summary>
+            <param name="format">The format string</param>
+            <param name="formatProvider">The format provider, this parameter is not used, and can be null.</param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.CompareTo(System.Object)">
+            <summary>
+            Compares two price values
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.op_Equality(RealTick.Api.Data.Price,System.Object)">
+            <summary>
+            The == operator
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.op_Inequality(RealTick.Api.Data.Price,System.Object)">
+            <summary>
+            The != operator
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.op_GreaterThan(RealTick.Api.Data.Price,System.Object)">
+            <summary>
+            The > operator
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Price.op_LessThan(RealTick.Api.Data.Price,System.Object)">
+            <summary>
+            The &lt; operator
+            </summary>
+            <param name="operand1"></param>
+            <param name="operand2"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Data.Price.Zero">
+            <summary>
+            This constant is the value of a zero price.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Price.BaseCode">
+            <summary>
+            Returns the base code of the price value, equivilent to the wBase field of the LPACK.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Price.IntegerValue">
+            <summary>
+            Returns the integer value of the price value, equivilent to the lVal field of the LPACK.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewPokeEventArgs">
+            <summary>
+            The NewPokeEventArgs class is used to send arguments to a NewPoke event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewPokeEventArgs.#ctor(RealTick.Api.Communication.ClientPoke)">
+            <summary>
+            
+            </summary>
+            <param name="poke"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewPokeEventArgs.Poke">
+            <summary>
+            Returns a reference to the ClientPoke object associated with the poke that raised the event.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewAdviseEventArgs">
+            <summary>
+            The NewAdviseEventArgs class is used to pass arguments to a NewAdvise event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewAdviseEventArgs.#ctor(RealTick.Api.Communication.ClientAdvise)">
+            <summary>
+            
+            </summary>
+            <param name="advise"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewAdviseEventArgs.Advise">
+            <summary>
+            A reference to the ClientAdvise object associated with the advise for which the event was raised.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewAdviseEventArgs.ShouldAckAdvise">
+            <summary>
+            By default, all advises are accepted.  If this advise should not be accepted, then the event
+            handler must set ShouldAckAdvise to false.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ExecuteEventArgs">
+            <summary>
+            The ExecuteEventArgs class provides data to an Ack event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ExecuteEventArgs.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.ExecuteEventArgs.Command">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientAdvise">
+            <summary>
+            The ClientAdvise class is used to store the advise query from the client, and provides
+            methods to respond to the client.  When the client unadvises or terminates the conversation
+            the OnUnadvise event is raised.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.#ctor(RealTick.Api.Communication.ClientConnection,System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.Ack(System.UInt16)">
+            <summary>
+            OBSOLETE.  You used to use this method to send an ACK or a NAK to the client.  However now the
+            list of advises is entirely managed by the DataServer class.  If you want to reject an incoming
+            advise, you should set the value of NewAdviseEventArgs.ShouldAckAdvise to false in your event handler.
+            </summary>
+            <param name="status">
+            The status of the ACK, the highest bit should be 1 if an ACK, and 0 if a NAK, the other bits are app defined. 
+            If unsure, use 0x0000 for NAK and 0x8000 for ACK.
+            </param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.UnadviseAck(System.UInt16)">
+            <summary>
+            Use this method to send an ACK or a NAK for an unadvise of this advise.
+            </summary>
+            <param name="status">The status value, if unsure use 0x0000 for NAK and 0x8000 for ACK.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.SendData(RealTick.Api.Data.RawData)">
+            <summary>
+            Use this method to send data associated with this advise to the client.
+            </summary>
+            <param name="data">A reference to a RawData object containing the data to send.  The format should match the format specified in the advise.</param>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.Equals(System.Object)">
+            <summary>
+            The Equals method was overriden to allow a ClientAdvise reference to be the key in a HashTable.
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Communication.ClientAdvise.GetHashCode">
+            <summary>
+            The GetHashCode method was overriden to allow a ClientAdvise reference to be the key in a HashTable.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientAdvise.Item">
+            <summary>
+            Returns the item string (TQL query) associated with this advise.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientAdvise.Format">
+            <summary>
+            Returns the data format which the client requested for this advise.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.ClientAdvise.Client">
+            <summary>
+            Returns a reference to the ClientConnection object associated with this advise.
+            </summary>
+        </member>
+        <member name="E:RealTick.Api.Communication.ClientAdvise.OnUnadvise">
+            <summary>
+            if the client closes this advise, the server can be notified both by this event from the actual
+            ClientAdvise object and also from the equivalent event on the parent ClientConnection object.  They 
+            both get raised, so either one may be used to note the unadvise.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.ClientAdvise.UnadviseHandler">
+            <summary>
+            delegate type for OnUnadvise event
+            </summary>
+            <param name="sender"></param>
+            <param name="ea"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewTerminateEventArgs.Client">
+            <summary>
+            Returns a reference to a ClientConnection object which cooresponds to the new client.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.ToolkitConv">
+            <summary>
+            The ToolkitConv class represents a client-side TALIPC conversation.  The server-side equivalent is implemented
+            in TalipcClientConnection.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.TalipcProtocol">
+            <summary>
+            The TalipcProtocol class is a subclass of the Protocol class which implements
+            the infrastructure of the TALIPC protocol.  An application which uses the TALIPC
+            protocol should construct an instance of TalipcProtocol in its application class
+            constructor, and call the Initialize() method.  Also it should call the Cleanup()
+            method in the application class finalizer.  The client can subclass the TalipcToolkitApp
+            class which already does this.  The TalipcProtocol requires the DOTNETTOOLKIT/TALIPC=YES
+            permit in order to instantiate.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.#ctor(RealTick.Api.Application.ToolkitApp)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.Initialize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.Cleanup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.CreateConnection(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.CreateConnection(System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="machine"></param>
+            <param name="service"></param>
+            <param name="topic"></param>
+            <param name="perms"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcProtocol.RegisterServer(System.String,System.String)">
+            <summary>
+            Use this method to register a talipc service, and create a TalipcDataServer object.
+            </summary>
+            <param name="Service">This string should contain the SERVICE name for the new talipc service.</param>
+            <param name="Topic">This string should contain the TOPIC name for the new talipc service.</param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcProtocol.Tracer">
+            <summary>
+            Returns currently connected protocol tracer.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.TalipcClientConnection">
+            <summary>
+            The TalipcClientConnection class is the TALIPC implementation of the ClientConnection base class.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection.Terminate">
+            <summary>
+            Requests that a terminate be sent.  Note that terminates are mediated behind the scenes so that 
+            there is always one terminate each direction at the end of the conversation, so calling this more
+            than once is harmless but also doesn't accomplish anything.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._RequestRespond(System.String,RealTick.Api.Data.RawData[])">
+            <summary>
+            Sends response data to the client.
+            </summary>
+            <param name="item"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._RequestNak(System.String,RealTick.Api.Data.DataFormat,System.UInt16)">
+            <summary>
+            Sends OtherAck to the client.
+            </summary>
+            <param name="item"></param>
+            <param name="format"></param>
+            <param name="status"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._AdviseAck(System.UInt16,System.String,RealTick.Api.Data.DataFormat)">
+            <summary>
+            Sends OtherAck to the client.
+            </summary>
+            <param name="status"></param>
+            <param name="item"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._AdviseData(RealTick.Api.Data.RawData,System.String)">
+            <summary>
+            Sends update data to the client.
+            </summary>
+            <param name="data"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._ExecuteAck(System.String,System.UInt16)">
+            <summary>
+            Sends ExecAck to the client.
+            </summary>
+            <param name="exe"></param>
+            <param name="status"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._Execute(System.String)">
+            <summary>
+            Sends execute to the client.
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcClientConnection._PokeAck(System.String,RealTick.Api.Data.DataFormat,System.UInt16)">
+            <summary>
+            Sends OtherAck to the client.
+            </summary>
+            <param name="Item"></param>
+            <param name="format"></param>
+            <param name="status"></param>
+        </member>
+        <member name="P:RealTick.Api.Talipc.TalipcClientConnection.Connected">
+            <summary>
+            Indicates whether the client is currently connected.  (Becomes false after conversation is terminated.)
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.Row">
+            <summary>
+            The Row class represents a row in a non rectangular data block.
+            It is usally constructed by the RawData.GetDataAsBlock() method
+            but can also be constructed by the user.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.Row.GetEnumerator">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.Row.#ctor(RealTick.Api.Data.Field[])">
+            <summary>
+            This constructor can be used by the client to construct a ROW
+            object.  This is done in order to construct a DataBlock object,
+            who's constructor needs an array of Row objects which represent
+            the rows in the data block being constructed.  The constructor
+            supports a variable number of arguments, so the client can pass
+            the fields for the row in as a single array, or each in their own
+            argument.  e.g. Row(fieldArray) or Row(f1,f2,f3,f4).
+            </summary>
+            <param name="fields"></param>
+        </member>
+        <member name="P:RealTick.Api.Data.Row.Item(System.Int32)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.Row.Item(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Data.Row.Item(RealTick.Api.Data.FieldInformation)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RealTick.Api.Data.Row.Count">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.Basecode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Talipc.TalipcDataServer">
+            <summary>
+            The TalipcDataServer class is the TALIPC implementation of the DataServer base class.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Talipc.TalipcDataServer.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.RawDataException">
+            <summary>
+            This exception is thrown if there's a problem reading or writing a RawData object.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.TalipcException">
+            <summary>
+            This exception is thrown when there is a communication error in any of the protocols.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.FieldError">
+            <summary>
+            The FieldError class is used to indicate what type of error is
+            contained in an error field.
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.InvalidError">
+            <summary>
+            ???
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.FieldNotFound">
+            <summary>
+            field not member of current record
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.UnknownFormat">
+            <summary>
+            can't represent field data: format is bogus
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.FieldNoValue">
+            <summary>
+            field value in current record uninitialized
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.RequestPending">
+            <summary>
+            record is currently being requested (cascaded servers only)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.NoRecord">
+            <summary>
+            record does not exist
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.NotPermissioned">
+            <summary>
+            Permissions not receieved 
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.FieldReset">
+            <summary>
+            field value has been reset (uninitialized)
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.InvalidData">
+            <summary>
+            Unexpected data
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Data.FieldError.InvalidBaseCode">
+            <summary>
+             Failed to create a Price field, due to an invalid base code. ( See function TBIsValidBaseCode )
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.RawData">
+            <summary>
+            The RawData class holds a block of raw binary data.  This can either
+            be data the toolkit has received from a server, or data that the client is going
+            to poke into a server.  A RawData object has a format code associated with it,
+            telling the client what kind of data is contained in it.  Currently only the 
+            "Binary" format is supported, and the client can only access the data as an IDataBlock reference.
+            The class also allows the client to write the data to a stream, and read it back
+            again.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.#ctor(System.IO.Stream)">
+            <summary>
+            This constructor allows the client to read the contents of a RawData block
+            from a stream.  The contents of the stream must be written with the
+            WriteDataToStream method.
+            </summary>
+            <param name="inputStream"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.#ctor(System.Byte[],RealTick.Api.Data.DataFormat)">
+            <summary>
+            This constructor allows the client to create a RawData block from a array of bytes.
+            </summary>
+            <param name="data"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.GetBinaryData">
+            <summary>
+            Returns a copy of the binary data contained in the object as a managed array of bytes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.GetDataAsBlock">
+            <summary>
+            Returns the contents of the RawData object as an IDataBlock
+            reference.  The format must be Binary or BinaryRectangular
+            for this method to work.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.ConvertToBinary(RealTick.Api.Data.IDataBlock)">
+            <summary>
+            This static function encodes the data contained in an  IDataBlock
+            reference in the Binary (TAL4) format, and places it in a RawData
+            object.  This is usefull when the client needs to construct a TAL4
+            block to poke into a server.
+            </summary>
+            <param name="block"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.WriteDataToStream(System.IO.Stream)">
+            <summary>
+            Writes the contents of a RawData object (both the binary data, and
+            the data format code), to an output stream.  It can be read back
+            using the public constructor for RawData.
+            </summary>
+            <param name="outputStream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Data.RawData.#ctor(RealTick.Api.Data.IDataBlock)">
+            <summary>
+            constructs a RawData object from a data block
+            </summary>
+            <param name="block0"></param>
+        </member>
+        <member name="P:RealTick.Api.Data.RawData.ByteCount">
+            <summary>
+            Returns the byte count of the data contained in the object.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.RawData.Format">
+            <summary>
+            Returns the format of the data contained in the object.
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Data.RawData.FormatString">
+            <summary>
+            Returns data format as a string formatted correctly for the wire (i.e. Binary -> TAL4)
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Data.MessageLoopAsyncThreading">
+            <summary>
+            The MessageLoopAsyncThreading class causes the AsyncQuery class to marshall calls
+            to the event handlers and callbacks to the message loop thread.  This is especially
+            usefully in GUI applications, because you know that a callback that may update your
+            application data will not come in the middle of a Windows.Form event or callback.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Data.MessageLoopAsyncThreading.#ctor(System.Windows.Forms.Form)">
+            <summary>
+            
+            </summary>
+            <param name="form"></param>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewRequestEventArgs">
+            <summary>
+            The NewRequestEventArgs class is used to pass arguements to new request event handlers.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewRequestEventArgs.#ctor(RealTick.Api.Communication.ClientRequest)">
+            <summary>
+            
+            </summary>
+            <param name="req"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewRequestEventArgs.Request">
+            <summary>
+            Returns a ClientRequest reference that cooresponds to the request for which this event was raised.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Exceptions.ToolkitPermsException">
+            <summary>
+            This exception is thrown if the application attempts to invoke a toolkit operation for which the
+            user is not currently permissioned.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Exceptions.ToolkitPermsException.CleanExit">
+            <summary>
+            This method will cleanly exit the process, in the case you receive a ToolkitPermsException while constructing a ToolkitApp (or subclass) object.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.TqlStatement">
+            <summary>
+            Encapsulation of an Item and Format
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.TqlStatement.Item">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Communication.TqlStatement.Format">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Communication.NewUnadviseEventArgs">
+            <summary>
+            The NewUnadviseEventArgs class is used to pass arguments to a NewUnadvise event handler.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Communication.NewUnadviseEventArgs.#ctor(RealTick.Api.Communication.ClientAdvise)">
+            <summary>
+            
+            </summary>
+            <param name="advise"></param>
+        </member>
+        <member name="P:RealTick.Api.Communication.NewUnadviseEventArgs.Advise">
+            <summary>
+            A reference to the ClientAdvise object associated with the advise for which the event was raised.
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.LogDataEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.LogDataEventArgs.#ctor(RealTick.Api.Application.Severity,RealTick.Api.Application.LogDataEventArgs.DataType,System.String,RealTick.Api.Data.IDataBlock)">
+            <summary>
+            
+            </summary>
+            <param name="sev"></param>
+            <param name="type"></param>
+            <param name="item"></param>
+            <param name="block"></param>
+        </member>
+        <member name="P:RealTick.Api.Application.LogDataEventArgs.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.LogDataEventArgs.Item">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.LogDataEventArgs.Severity">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:RealTick.Api.Application.LogDataEventArgs.Type">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.LogDataEventArgs.DataType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.LogDataEventArgs.DataType.RequestData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.LogDataEventArgs.DataType.AdviseData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:RealTick.Api.Application.LogDataEventArgs.DataType.PokeData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:RealTick.Api.Application.ConfigSection">
+            <summary>
+            The ConfigSection class allows the client to read settings from a section of the
+            tal.ini file.  The class is retreived through the ToolkitApp.GetConfigSection()
+            method, or the ToolkitApp.AppConfig property.  This class cooresponds to one
+            section in the tal.ini file, and allows the client to read and write strings,
+            or to read filenames rooted in the TAL directory.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="szSection"></param>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.GetFilename(System.String,System.String)">
+            <summary>
+            The GetFilename method retreives a the value of a tal.ini setting, treating it
+            as if it is a filename relative to the TAL directory.  The value returned
+            will be a complete file path.  The client and supply a default value, which
+            will be used if the setting does not exist.
+            </summary>
+            <param name="keyName">The name of the tal.ini setting</param>
+            <param name="defValue">The default value</param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.GetTalDir">
+            <summary>
+            Returns the path where the RealTick configuration files (such as TAL.INI) are installed.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.GetTalBinaryDir">
+            <summary>
+            Returns the path where the RealTick program files (such as REALTICK.API.DLL) are installed.
+            </summary>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.GetValue(System.String,System.String)">
+            <summary>
+            The GetValue method retreives the value of a tal.ini setting, and retuns it
+            as a string.  The client can supply a default value, which is used when
+            the setting is not present.
+            </summary>
+            <param name="keyName">The name of the tal.ini setting</param>
+            <param name="defValue">The default value</param>
+            <returns></returns>
+        </member>
+        <member name="M:RealTick.Api.Application.ConfigSection.SetValue(System.String,System.String)">
+            <summary>
+            "The SetValue method writes a setting to the tal.ini file.  If the setting
+            "already exists, it will be overwritten.
+            </summary>
+            <param name="keyName">The name of the tal.ini setting</param>
+            <param name="defValue">The value to write to the setting</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
