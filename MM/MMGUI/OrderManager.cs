@@ -210,36 +210,15 @@ namespace mm
       if (WithinRules() && state == State.Watching) {
           directions.LimitPrice = bestBid;
 	  WriteLog("Within rules.. am placing Order");
-	executor.placeOrder(directions);
-	state = State.OrderPlaced;
+	  WriteLine("Within rules.. am placing order for {0} at price of {1} ", directions.Symbol, directions.LimitPrice);
+	  executor.placeOrder(directions);
+	  state = State.OrderPlaced;
       }
       else if (!WithinRules() && state == State.OrderPlaced) {
 	WriteLog("NOT Within rules.. cancelling any live orders. still watching."); 
 	executor.cancelOrder();
 	state = State.Watching;
       }
-      StringBuilder line = new StringBuilder();
-      line.Append(String.Format("{0,12}|", String.Format("{0:H:mm:ss}", DateTime.Now)));
-      line.Append(String.Format("{0,15}|", directions.Symbol));
-      line.Append(String.Format("{0,8}|", totalBidSize[bestBid]));
-      line.Append(String.Format("{0,8}|", totalAskSize[bestAsk]));
-      status.TotalBid = totalBidSize[bestBid].Value;
-      status.TotalAsk = totalAskSize[bestAsk].Value;
-      status.BestBid = bestBid;
-      status.BestAsk = bestAsk;
-      status.Time = String.Format("{0:H:mm:ss}", DateTime.Now);
-      if (market == Market.FIVE_CENT) {
-	line.Append(String.Format("{0,5}|", 0.05));
-      }
-      else if (market == Market.TEN_CENT) {
-	line.Append(String.Format("{0,5}|", 0.1));
-      }
-      else {
-	line.Append(String.Format("{0,5}|", "?"));
-      }
-      line.Append(state);
-      WriteLine(line.ToString());
-
       status.Status = state.ToString();
       EventHandler<DataEventArgs<AutobidStatus>> hnd = AutobidStatusListeners;
       if (hnd != null)
