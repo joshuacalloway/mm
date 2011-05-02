@@ -65,17 +65,9 @@ namespace mmgui
 
       orderManager.WriteLineListeners += Terminal.OnWriteLine;
       Terminal.Clear();
-      Terminal.WriteHeader();
       OrderDirections directions = new OrderDirections();
       XmlDataProvider xml = (XmlDataProvider)FindName("Rule");
       Simulated = Convert.ToBoolean(xml.Document.SelectSingleNode("Rule/Simulated").InnerText);
-      if (Simulated) {
-	SimulatedStatusLabel.Content = "Simulated Trades";
-      }
-      else {
-	SimulatedStatusLabel.Content = "Live Trades";
-      }
-
       directions.Simulated = Simulated;
       directions.Symbol = optionSymbolComboBox.Text;
       directions.Route = routeComboBox.Text;
@@ -93,13 +85,13 @@ namespace mmgui
       optionSymbolComboBox.Items.Refresh();
     }
 
-    private bool columnsHidden = true;
+    private bool columnsHidden = false;
     private void hideShowColumnsButton_click(object sender, RoutedEventArgs e)
     {
       if (columnsHidden)
         {
-	  BestBidColumn.Width = new System.Windows.GridLength(75.0);
-	  BestAskColumn.Width = new System.Windows.GridLength(75.0);
+	  BestBidColumn.Width = new System.Windows.GridLength(100.0);
+	  BestAskColumn.Width = new System.Windows.GridLength(100.0);
 	  columnsHidden = false;
         }
       else
@@ -140,6 +132,13 @@ namespace mmgui
       StatusTable_Time.Text = data.Time;
       StatusTable_BestBid.Text = String.Format("{0}",data.BestBid);
       StatusTable_BestAsk.Text = String.Format("{0}",data.BestAsk);
+    }
+
+    private void simulatedCheckBox_Click(object sender, RoutedEventArgs e)
+    {
+        bool newSimulated = simulatedCheckBox.IsChecked.Value;
+	string source = Rule.Source.LocalPath;
+	Rule.Document.Save(source);
     } 
     
   }
