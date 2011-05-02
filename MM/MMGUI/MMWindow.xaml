@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
 	xmlns:mmgui="clr-namespace:mmgui"
-        Title="Option Market Maker ( version 0.36 - April. 26, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.36.5 - May 2, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -44,7 +44,8 @@
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="phsCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=PHS}"/>
 	</StackPanel>
 	<StackPanel Orientation="Horizontal">
-	  <Label Name="SimulatedStatusLabel" Content="" Height="30" Width="100" HorizontalAlignment="Left" />
+	  <Label Content="Simulate Trades" Height="25" Width="200" HorizontalAlignment="Left" />
+	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="simulatedCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=Simulated}" Click="simulatedCheckBox_Click" />
 	</StackPanel>
 	<GroupBox BorderThickness="1" BorderBrush="Azure" FontSize="12" FontWeight="Bold" Height="200"  Width="714"
 		  Background="Gray">
@@ -61,8 +62,8 @@
 		  <TableColumn Width="100" Name="TotalBidColumn"/>
 		  <TableColumn Width="100" Name="TotalAskColumn"/>
 		  <TableColumn Width="100" Name="StatusColumn"/>
-		  <TableColumn Width="0" Name="BestBidColumn"/>
-		  <TableColumn Width="0" Name="BestAskColumn"/>                          
+		  <TableColumn Width="100" Name="BestBidColumn"/>
+		  <TableColumn Width="100" Name="BestAskColumn"/>                          
 		</Table.Columns>
 		<TableRowGroup>
 		  <TableRow Background="Navy">
@@ -170,7 +171,7 @@
 	  </StackPanel>
 	  <StackPanel Orientation="Horizontal">
 	    <Label Width="400" Background="DarkGray" />
-	    <Button Content="Save Rule" Grid.Row="3" Grid.ColumnSpan="2" Height="30" HorizontalAlignment="Left" Name="saveButton" VerticalAlignment="Top" Width="200" Click="saveButton_Click"/>
+	    <Button Content="Apply" Grid.Row="3" Grid.ColumnSpan="2" Height="30" HorizontalAlignment="Left" Name="saveButton" VerticalAlignment="Top" Width="200" Click="saveButton_Click"/>
 	  </StackPanel>
 	</StackPanel>
       </Grid>
