@@ -75,18 +75,6 @@ namespace mmgui
     private delegate void TextChanger(string msg);
     int numlines = 0;
 
-    public void WriteHeader() {
-      StringBuilder header = new StringBuilder();
-      header.Append(String.Format("{0,12}|", "TIME"));
-      header.Append(String.Format("{0,15}|", "TICKER"));
-      header.Append(String.Format("{0,8}|", "BID SZ"));
-      header.Append(String.Format("{0,8}|", "ASK SZ"));
-      header.Append(String.Format("{0,5}|", "MRKT"));
-      header.Append(String.Format("{0,8}|", "STATUS"));
-      WriteLine(header.ToString());
-      WriteLine("----------------------------------");
-    }
-
     public void Write(string st)
     {
       WriteNow( st );
@@ -103,7 +91,6 @@ namespace mmgui
       if (numlines > 21)
       {
           Clear();
-          WriteHeader();
           numlines = 1;
       }
       foreach (StringEvent data in e)
