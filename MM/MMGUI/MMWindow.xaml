@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
 	xmlns:mmgui="clr-namespace:mmgui"
-        Title="Option Market Maker ( version 0.37.5 - May 3, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.38.5 - May 3, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
