@@ -1,0 +1,10 @@
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Account>
+  <Bank></Bank>
+  <Branch>test</Branch>
+  <Customer></Customer>
+  <Deposit></Deposit>
+  </Account>
+  <Test>true</Test>
+
+</Configuration>
