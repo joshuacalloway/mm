@@ -73,7 +73,6 @@ namespace mm
     public void placeOrder(OrderDirections directions) {
       cancelOrder();
       cache = new OrderCache(app);
-     
       this.directions = directions;
       OrderBuilder bld = new OrderBuilder(cache);
       state = State.ConnectionPending;
@@ -81,18 +80,16 @@ namespace mm
 	cache.Start();
 	while (state != State.ConnectionDead && state != State.OrderFinished) {
           if (!WaitAny(10000, watch.WaitHandles) ) {
-	    WriteLine("TIMED OUT WAITING FOR RESPONSE");
+	    WriteLine("TIMED OUT WaitAny(10000) WAITING FOR RESPONSE");
 	    break;
           }
-	  
-          OrderWatcher.Action action;
+	  OrderWatcher.Action action;
           while (watch.GetNext(out action, out ord)) {
 	    switch (action) {
 	    case OrderWatcher.Action.Live:
 	      if (state == State.ConnectionPending) {
 		WriteLine("SUBMITTING ORDER");
 		state = State.OrderPending;
-		
 		bld.SetAccount(Configuration.getValue("Configuration/Account/Bank"),
 			       Configuration.getValue("Configuration/Account/Branch"),
 			       Configuration.getValue("Configuration/Account/Customer"),
@@ -143,7 +140,7 @@ namespace mm
 	  } // end while getNext
 	} // end while state
       } // end using watch
-      WriteLine("DONE");
+      WriteLine("DONE PLACING ORDER");
     }
 
     protected void WriteLog(string msg) {
