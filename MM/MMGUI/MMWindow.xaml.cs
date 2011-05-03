@@ -54,6 +54,7 @@ namespace mmgui
     private void autobidButton_Click(object sender, RoutedEventArgs e)
     {
       Console.WriteLine("Autobid Button Clicked ");
+      Console.WriteLine("Configuration.getValue(test): " + Configuration.getValue("Configuration/Account/Branch"));
       OrderManager.Rules rules = new OrderManager.Rules();
       rules.MinTotalBidSizeTenCent = Convert.ToInt32(minTotalBidSizeTenCentTextBox.Text );
       rules.MinTotalBidSizeFiveCent = Convert.ToInt32(minTotalBidSizeFiveCentTextBox.Text);
