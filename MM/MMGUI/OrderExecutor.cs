@@ -17,6 +17,7 @@ namespace mm
 
   class OrderExecutor : CanWait
   {
+    public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
     OrderCache cache;
     ClientAdapterToolkitApp app;
     public OrderDirections directions { get; set; }
@@ -34,7 +35,6 @@ namespace mm
 	return;
       }
       DisplayOrder(ord);
-      //if (state == State.OrderPending && ord.Type == "UserSubmitOrder") {
       if (ord.CurrentStatus == "LIVE") {
 	WriteLine("ORDER LIVE -- SUBMITTING CANCEL");
 	state = State.CancelPending;
@@ -42,8 +42,32 @@ namespace mm
 	cache.SubmitCancel(cxl);
 	ord = null;
       }
-      //}
       cache.Dispose();
+    }
+
+    private string getExchange(OrderDirections directions) {
+      if (directions.Cbo) {
+	WriteLine("Am placing order {0} on Cbo", directions.Symbol);
+	return "CBO";
+      }
+      if (directions.Box) {
+	WriteLine("Am placing order {0} on Box", directions.Symbol);
+	return "Box";
+      }
+      if (directions.Ise) {
+	WriteLine("Am placing order {0} on Ise", directions.Symbol);
+	return "Ise";
+      }
+      if (directions.Ase) {
+	WriteLine("Am placing order {0} on Ase", directions.Symbol);
+	return "Ase";
+      }
+      if (directions.Phs) {
+	WriteLine("Am placing order {0} on Phs", directions.Symbol);
+	return "Phs";
+      }
+      WriteLine("don't know what exhange to send order for {0}", directions.Symbol);
+      return "Uknown";
     }
 
     public void placeOrder(OrderDirections directions) {
@@ -76,13 +100,14 @@ namespace mm
 		bld.SetBuySell(OrderBuilder.BuySell.BUY);
 		bld.SetExpiration(OrderBuilder.Expiration.DAY);
 		bld.SetRoute(directions.Route);
-		bld.SetSymbol(directions.Symbol, "NYS", OrderBuilder.SecurityType.STOCKOPT);
+		bld.SetSymbol(directions.Symbol, getExchange(directions), OrderBuilder.SecurityType.STOCKOPT);
 		bld.SetVolume(directions.Size);
 		bld.SetPriceLimit(directions.LimitPrice);
 		if (directions.Simulated) {
 		  WriteLine("Am sending simulated order");
 		}
 		else {
+		  WriteLine("Am sending real order");
 		  cache.SubmitOrder(bld);
 		}
 	      }
@@ -121,11 +146,28 @@ namespace mm
       WriteLine("DONE");
     }
 
+    protected void WriteLog(string msg) {
+        MessageAppEx.LogSev(Severity.Info, "{0}", msg);       
+    }
+
+    protected void WriteLog(string fmt, params object[] args) {
+      string st = String.Format(fmt, args);
+      WriteLog(st);
+    }
+
     protected override void WriteLine(string fmt, params object[] args)
     {
-      string st = String.Format(fmt, args);
-      MessageAppEx.LogSev(Severity.Info, st);
+      fmt += "\n";
+      Write(fmt, args);
+    }
         
+    protected void Write(string fmt, params object[] args)
+    {
+      string st = string.Format(fmt, args);
+      EventHandler<DataEventArgs<StringEvent>> hnd = WriteLineListeners;
+      if (hnd != null)
+	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st), true));
+      WriteLog(fmt, args);
     }
 
     protected void DisplayOrder(OrderRecord ord)
