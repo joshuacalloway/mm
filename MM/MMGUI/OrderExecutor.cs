@@ -69,7 +69,10 @@ namespace mm
 		WriteLine("SUBMITTING ORDER");
 		state = State.OrderPending;
 		
-		bld.SetAccount(null, "TEST", null, null);
+		bld.SetAccount(Configuration.getValue("Configuration/Account/Bank"),
+			       Configuration.getValue("Configuration/Account/Branch"),
+			       Configuration.getValue("Configuration/Account/Customer"),
+			       Configuration.getValue("Configuration/Account/Deposit"));
 		bld.SetBuySell(OrderBuilder.BuySell.BUY);
 		bld.SetExpiration(OrderBuilder.Expiration.DAY);
 		bld.SetRoute(directions.Route);
