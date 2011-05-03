@@ -36,6 +36,7 @@ namespace mmgui
 
     HashSet<string> recentSymbols = new HashSet<string>();
     OrderManager orderManager = new OrderManager();
+     
     public bool Simulated { get; set; }
     public MMWindow() {
       InitializeComponent();
@@ -64,7 +65,7 @@ namespace mmgui
       rules.MinCoreExchangeBidSize = Convert.ToInt32(MinCoreExchangeBidSizeTextBox.Text);
       orderManager.rules = rules;
 
-      orderManager.WriteLineListeners += Terminal.OnWriteLine;
+      orderManager.AddWriteLineListeners(Terminal.OnWriteLine);
       Terminal.Clear();
       OrderDirections directions = new OrderDirections();
       XmlDataProvider xml = (XmlDataProvider)FindName("Rule");
