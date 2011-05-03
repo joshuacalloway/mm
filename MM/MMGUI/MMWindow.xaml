@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mm="clr-namespace:mm"
 	xmlns:mmgui="clr-namespace:mmgui"
-        Title="Option Market Maker ( version 0.38.5 - May 3, 2011 )" Height="Auto" Width="1200">
+        Title="Option Market Maker ( version 0.39 - May 3, 2011 )" Height="Auto" Width="1200">
   <Window.DataContext>
     <XmlDataProvider x:Name="Rule" Source="Rules.xml" XPath="Rule"/>
   </Window.DataContext>
@@ -11,43 +11,44 @@
   <DockPanel LastChildFill="True">
     <DockPanel LastChildFill="True" DockPanel.Dock="Left">
       <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
-	<StackPanel Orientation="Horizontal">
-	  <Label Content="Option" Height="25" Width="100" />
-	  <ComboBox IsEditable="True" Height="25" HorizontalAlignment="Left" Text="+NG\21E1\13" Name="optionSymbolComboBox" ItemsSource="{Binding}" VerticalAlignment="Top" Width="125" />
+	<StackPanel Orientation="Horizontal" Margin="2" >
+        
+	  <Label Content="Option" Height="25" Width="100" Margin="2" />
+	  <ComboBox IsEditable="True" Height="25" Margin="5" HorizontalAlignment="Left" Text="+NG\21E1\13" Name="optionSymbolComboBox" ItemsSource="{Binding}" VerticalAlignment="Top" Width="125" />
 	  
-	  <Button Content="Autobid" Name="autobidButton" Width="50" Height="25" Click="autobidButton_Click"/>
+	  <Button Content="Autobid" Name="autobidButton" Margin="2" Width="50" Height="25" Click="autobidButton_Click"/>
 	  
-	  <Button Content="Cancel" Name="cancelButton" Width="50" Height="25" Click="cancelButton_Click"/>
+	  <Button Content="Cancel" Name="cancelButton" Margin="2" Width="50" Height="25" Click="cancelButton_Click"/>
 	</StackPanel>
-	<StackPanel Height="30" Orientation="Horizontal">
+	<StackPanel Height="30" Orientation="Horizontal" Margin="2">
 	  <StackPanel Height="30" Orientation="Horizontal">
-	    <Label Content="Size" Height="25" Width="100" HorizontalAlignment="Left" />
-	    <TextBox Height="25" HorizontalAlignment="Left" Text="{Binding XPath=Size}" Name="sizeTextBox" VerticalAlignment="Top" Width="100" />
+	    <Label Content="Size" Height="25" Width="100" HorizontalAlignment="Left" Margin="2" />
+	    <TextBox Height="25" HorizontalAlignment="Left" Margin="2" Text="{Binding XPath=Size}" Name="sizeTextBox" VerticalAlignment="Top" Width="100" />
 	  </StackPanel>
 	  <StackPanel Orientation="Horizontal">
-	    <Label Content="Route" Height="30" Width="100" HorizontalAlignment="Left" />
-	    <ComboBox Height="30" IsEditable="True" Name="routeComboBox" DataContext="{Binding}" ItemsSource="{Binding XPath=Routes/Route}" IsSynchronizedWithCurrentItem="True" Width="125" />
+	    <Label Content="Route" Height="30" Width="100" Margin="2" HorizontalAlignment="Left" />
+	    <ComboBox Height="30" IsEditable="True" Margin="2" Name="routeComboBox" DataContext="{Binding}" ItemsSource="{Binding XPath=Routes/Route}" IsSynchronizedWithCurrentItem="True" Width="125" />
 	  </StackPanel>
 	</StackPanel>
 	<StackPanel Height="30" Orientation="Horizontal">
 	  <!-- Exchanges -->
-	  <Label Content="BOX" Height="25" Width="40" HorizontalAlignment="Left" />
-	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="boxCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=BOX}" />
+	  <Label Content="BOX" Height="25" Width="40" Margin="2" HorizontalAlignment="Left" />
+	  <CheckBox Height="25" HorizontalAlignment="Left" Margin="2" Name="boxCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=BOX}" />
 	  
-	  <Label Content="CBO" Height="25" Width="40" HorizontalAlignment="Left" />
-	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="cboCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=CBO}" />
-	  <Label Content="ISE" Height="25" Width="40" />
+	  <Label Content="CBO" Height="25" Width="40" Margin="2" HorizontalAlignment="Left" />
+	  <CheckBox Height="25" HorizontalAlignment="Left" Name="cboCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=CBO}" />
+	  <Label Content="ISE" Height="25" Width="40" Margin="2"/>
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="iseCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=ISE}"/>
-	  <Label Content="ASE" Height="25" Width="40" />
+	  <Label Content="ASE" Height="25" Width="40" Margin="2" />
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="aseCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=ASE}" />
-	  <Label Content="PHS" Height="25" Width="40" />
+	  <Label Content="PHS" Height="25" Width="40" Margin="2"/>
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="phsCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=PHS}"/>
 	</StackPanel>
 	<StackPanel Orientation="Horizontal">
-	  <Label Content="Simulate Trades" Height="25" Width="200" HorizontalAlignment="Left" />
+	  <Label Content="Simulate Trades" Height="25" Width="200" Margin="2" HorizontalAlignment="Left" />
 	  <CheckBox Height="25" HorizontalAlignment="Left"  Name="simulatedCheckBox" VerticalAlignment="Top" Width="20" IsChecked="{Binding XPath=Simulated}" Click="simulatedCheckBox_Click" />
 	</StackPanel>
-	<GroupBox BorderThickness="1" BorderBrush="Azure" FontSize="12" FontWeight="Bold" Height="200"  Width="714"
+	<GroupBox BorderThickness="1" BorderBrush="Azure" FontSize="12" FontWeight="Bold" Height="100"  Width="714"
 		  Background="Gray">
 	  <GroupBox.Header>
 	  Order Status
