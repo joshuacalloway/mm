@@ -39,9 +39,13 @@ namespace mm
     State state = State.Idle;
     ClientAdapterToolkitApp app = new ClientAdapterToolkitApp();
     RegionalTable querytable;
-    public new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
+    private new event EventHandler<DataEventArgs<StringEvent>> WriteLineListeners;
     public new event EventHandler<DataEventArgs<AutobidStatus>> AutobidStatusListeners;
 
+    public void AddWriteLineListeners(EventHandler<DataEventArgs<StringEvent>> WriteLineListener) {
+      WriteLineListeners += WriteLineListener;
+      executor.WriteLineListeners += WriteLineListener;
+    }
 
     public class Rules
     {
@@ -66,22 +70,38 @@ namespace mm
       bool withinRules = true;
       if (market == Market.FIVE_CENT) {
 	withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent);
+	WriteLine("FIVE_CENT (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
+
 	WriteLog("FIVE_CENT (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeFiveCent));
 	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01);
+
+	WriteLine("FIVE_CENT (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
 	
 	WriteLog("FIVE_CENT (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerFiveCent * 0.01));
       }
       if (market == Market.TEN_CENT) {
+	WriteLine("TEN_CENT, (totalBidSize[bestBid]:{0} >= rules.MinTotalBidSizeTenCent):{1} is {2}", totalBidSize[bestBid], rules.MinTotalBidSizeTenCent, (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent));
+	withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
+
 	WriteLog("TEN_CENT, (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent) : {0}", (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent));
 	withinRules = withinRules && (totalBidSize[bestBid] >= rules.MinTotalBidSizeTenCent);
 	withinRules = withinRules && (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01);
+
+
+	WriteLine("TEN_CENT, (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01));
+
 	WriteLog("TEN_CENT, (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01) : {0}", (totalAskSize[bestAsk] <= totalBidSize[bestBid] + totalBidSize[bestBid] * rules.MaxAskSizeBuyTriggerTenCent * 0.01));
       }
       else {
 	withinRules = false;
       }
+
+      WriteLine("toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
+
       WriteLog("toDouble(bestAsk) < rules.MaxAskPrice : {0}", (toDouble(bestAsk) < rules.MaxAskPrice));
       withinRules = withinRules && toDouble(bestAsk) < rules.MaxAskPrice;
+
+      WriteLine("(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
       WriteLog("(totalBidSize[bestBid] > rules.MinCoreExchangeBidSize) : {0}", (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize));
       withinRules = withinRules || (totalBidSize[bestBid] > rules.MinCoreExchangeBidSize);
       return withinRules;
@@ -107,16 +127,13 @@ namespace mm
 	hnd(this, new DataEventArgs<StringEvent>(new StringEvent(st), true));
     }
 
-
     protected void WriteLog(string msg) {
-        MessageAppEx.LogSev(Severity.Info, "{0}", msg);
-   
-       
+        MessageAppEx.LogSev(Severity.Info, "{0}", msg);       
     }
+
     protected void WriteLog(string fmt, params object[] args) {
       string st = String.Format(fmt, args);
       WriteLog(st);
-
     }
 
     protected void WriteLine(string fmt, params object[] args)
@@ -219,6 +236,10 @@ namespace mm
 	executor.cancelOrder();
 	state = State.Watching;
       }
+      status.TotalAsk = totalAskSize[bestAsk].Value;
+      status.TotalBid = totalBidSize[bestBid].Value;
+      status.BestBid = bestBid;
+      status.BestAsk = bestAsk;
       status.Status = state.ToString();
       EventHandler<DataEventArgs<AutobidStatus>> hnd = AutobidStatusListeners;
       if (hnd != null)
