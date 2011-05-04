@@ -209,11 +209,32 @@ namespace mm
       return market;
     }
 
+    string time;
+
+    private void updateTime(RegionalRecord rec)
+    {
+        FieldInformation fi6058 = FieldInformation.GetFieldInformation(6058);
+        Field field6058 = rec.GetField(fi6058);
+        if (field6058 != null)
+        {
+            time = field6058.TimeValue.ToString();
+        }
+        /*
+        FieldInformation fiREGIONAL_ASK_TIME = FieldInformation.GetFieldInformation("REGIONAL_ASK_TIME");
+        Field fieldREGIONAL_ASK_TIME = data.GetField(fiREGIONAL_ASK_TIME);
+        if (fieldREGIONAL_ASK_TIME != null)
+        {
+            Console.WriteLine("REGIONAL_ASK_TIME = {0}", fieldREGIONAL_ASK_TIME.TimeValue.ToString());
+        }
+         */
+    }
+
     void OnData(object sender, DataEventArgs<RegionalRecord> args)
     {
       foreach (RegionalRecord data in args) {
 	var bld = new StringBuilder();
 	dataByExchanges[data.RegionalExchid] = data;
+    updateTime(data);
       }
       calculateTotalBidAskSizes();
       placeCancelOrder();
@@ -240,6 +261,7 @@ namespace mm
       status.TotalBid = totalBidSize[bestBid].Value;
       status.BestBid = bestBid;
       status.BestAsk = bestAsk;
+      status.Time = time;
       status.Status = state.ToString();
       EventHandler<DataEventArgs<AutobidStatus>> hnd = AutobidStatusListeners;
       if (hnd != null)
